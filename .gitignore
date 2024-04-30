@@ -1,0 +1,13 @@
+# Proto files
+dish.protoset
+# Working grpc endpoints
+targets.txt
+# Prototype code
+helper.py
+DockerFile
+main.py
+# Progress Tracking
+TODO
+
+# python venv
+/vnenv

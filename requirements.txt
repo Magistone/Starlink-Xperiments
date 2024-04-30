@@ -1,0 +1,10 @@
+pyyaml>=6.0.1
+
+icmplib>=3.0.4
+
+requests>=2.31.0
+
+grpcio>=1.62.1
+protobuf>=5.26.1
+yagrc>=1.1.1
+typing-extensions>=4.3.0
