@@ -1,5 +1,6 @@
-
-
+services:
+# DB (mongo I guess)
+# Master process for collection
 
 volumes:
   drive_storage:

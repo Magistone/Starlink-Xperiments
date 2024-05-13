@@ -1,11 +1,10 @@
 # Proto files
 dish.protoset
 # Working grpc endpoints
-targets.txt
+grpc_targets.txt
 # Prototype code
 helper.py
-DockerFile
-main.py
+DockerFile-sketch
 # Progress Tracking
 TODO
 
