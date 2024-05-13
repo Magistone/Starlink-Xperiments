@@ -1,0 +1,2 @@
+modules that are downloaded dynamically during setup:
+starlink_grpc.py from sparky8512/starlink-grpc-tools
