@@ -1,8 +1,8 @@
 import requests
 import socket
-import requests.packages.urllib3.util.connection as urllib3_cn
+import requests.packages.urllib3.util.connection as urllib3_cn # type: ignore
 
-#Force IP protocol layer utils
+#Force IP layer utils
 original = urllib3_cn.allowed_gai_family
 
 def force_v6():
@@ -15,7 +15,7 @@ def reset_forced_version():
     urllib3_cn.allowed_gai_family = original
 
 #Required by spec
-def setup():
+def setup(setup):
     pass
 
 #Required by spec
@@ -41,6 +41,3 @@ def collect_public_ipv6():
     urllib3_cn.allowed_gai_family = force_v6
     response = requests.get('https://ifconfig.me')
     return response.text
-
-data = collect()
-print(data)

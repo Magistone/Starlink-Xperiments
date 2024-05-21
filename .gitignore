@@ -1,6 +1,5 @@
 # Proto files
 dish.protoset
-# Working grpc endpoints
 grpc_targets.txt
 # Prototype code
 helper.py
@@ -8,5 +7,9 @@ DockerFile-sketch
 # Progress Tracking
 TODO
 
-# python venv
+# python stuff
 /vnenv
+/modules/__pycache__
+
+# External dependencies
+/modules/grpc.py

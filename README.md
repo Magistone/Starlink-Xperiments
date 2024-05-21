@@ -1,60 +1,47 @@
 # Starlink toolset for measurements
-This toolset is designed to be used as a platform to easily collect metrics about starlink network performance.
-Alternatively, if you are a non-researcher, you can use this for network monitoring.
+This toolset is designed to be used as a platform to easily collect metrics about starlink and its network performance.
 This toolset was developed as a Bachelor Thesis At Saarland university under the supervision of Dependable Systems Chair.
 
-## Installation
-### Prerequisites
- - Linux Based Machine: machine on a network that is connected to the dish. Due to docker on widnows implementation some scripts would not work (you're welcome to try).
- - All scripts that query the dish directly expect to find it on the static `192.168.100.1` IP. Note: this IP works in bypass mode as well, although you might need to add a static route to your router
- - Docker installed. See [docs](https://docs.docker.com/get-docker/)
- - IPv6 enabled in Docker. See [docs](https://docs.docker.com/config/daemon/ipv6/). No need to create a network yourself, docker compose takes care of that. Feel free to change the subnet according to IPv6 specification, should you need to.
-### Installation
- - The package comes with a script that builds all the required containers.
- - Make sure Docker is running
- - run `build.sh`, this will invoke a script that builds all the containers
- - CONFIGURE TARGETS ????? TODO!!!
- - After the script finishes and you have configured targets, run `docker compose up` from the root of this directory. Optionally, add `-d` flag to run in the background
+## Requirements
+Orchestrator: python >=3.10, IPv6 working or a tunnel to machine with IPv6
+Nodes behind starlink: IPv6 working
 
-## GRPC tools
-Partially based on [sparky8512's tools](https://github.com/sparky8512/starlink-grpc-tools), custom implementation
-### server
-The starlink dish is always at `192.168.0.1` and has grpc server reflection enabled on port `9200`.
-Since that is the case, you can query the server for formats of messages and generate the proto files required for querying using [grpcurl](https://github.com/fullstorydev/grpcurl).
-Example commands:
-`grpcurl -plaintext 192.168.100.1:9200 list` - Lists all service
-`grpcurl -plaintext 192.168.100.1:9200 describe SpaceX.API.Device.Device` - Describe a service/message
-To list all possible requests run the above command with `SpaceX.API.Device.Request` target. (Or response for responses respectively)
-You can also describe each of the messages. Note that a lot of them are empty, i.e they don't require any data to be sent along.
-### generating protobuf
-(NOT NEEDED, repository already contains required files)
-See [starlink-grpc-tools wiki](https://github.com/sparky8512/starlink-grpc-tools/wiki/gRPC-Protocol-Modules#using-extract_protosetpy)
-
-## Network tools
-Basic metrics collected about the network behavior
-### Ping
-Sends ICMP ping packets to specified hosts with specified interval.
+## Included modules
+All parameters are required unless stated otherwise
+### IP
+Collects Current IPv4 and IPv6 address
+Module specific parameters:
+- `None`
+- Recommended period: 15s (= once per starlink widow)
 ### Traceroute
-Runs traceroute against specified host with specified interval.
-The recommended frequency is 1 (=once every satelite window)
+Collects traceroute against a list of targets.
+For each target, returns a `dict` where keys correspond to hop distance and values contain `address` and `rtt_ms` fields. Only single packet is sent per hop
+Module specific parameters:
+- `targets: list[str]`: List of targets against which to run traceroute. Each string can be any of the following types `IPv4`, `IPv6`, `FQDN`. Mixing is allowed
+### Ping
+Collects ping against a list of targets
+For each target returns an object with `rtt_ms` property. This property is average of 3 packets sent with 5ms gaps. If the reply comes from a different host or the target is FQDN additionally contains `address` property specyfying the IP address
+Module specific parameters:
+- `targets: list[str]`: List of targets agaisnt which to collect ping (rtt) data. Each string can be any of the following types `IPv4`, `IPv6`, `FQDN`. Mixing is allowed
+### Weather
+Collects weather data locally - precipitation and cloud coverage.
+This module uses MET weather API, please familirize yourself with their [TOS](https://developer.yr.no/doc/TermsOfService/) before using the module.
+In case your region is not covered you will have to find a different provider and/or write a custom version.
+Module specific parameters:
+- `user_agent: str`: Must conform to MET Weather API requirements
+- Starlink dish configuration: Location enabled. The script queries the dish for GPS coordinates during the setup period. After setup, location can be disabled.
+- Recommended period: 30m (MET update period). Querying more often will result in `None` as response
+### Space Weather
+Collects space weather data on [NOAA Scale](https://www.spaceweather.gov/noaa-scales-explanation)
+Underlying metrics (e.g. proton flux, k-index) are historically available on [spaceweather.gov]
+Module specific parameters:
+- `None`
 
-## Other collected metrics
-WARNING: Physics ahead
-Since communication uses parts of the electromagnetic spectrum, it is not resistant to nature. 
-Starlink uses Ku-band and Ka-band for their satellite communication. This band is susceptible to weather conditions hence 2 additional metrics are connected.
-### Weather data
-We consifer sufficient to collect sky data - clear sky/cloudy/thunderstorm/rain (snow or other precipitation) as it affects the performace.
-It is unlikely to see full disconnects, performance will only be degraded.
-The effect of thunderstorms is unknown
-### Space Weather data
-This project was done about a year before predicted solar maximum in [July 2025](https://www.swpc.noaa.gov/products/solar-cycle-progression), albeit we haven't witnessed powerful enough GeoMagnetic storms or solar flares to draw any conclusion how it affects network performance. 
-Given Ionosphere altitude and starlink orbital shell altitude, we hypotezize that we would need to see an event of magnitude that is at least G3 or R3 or S3. [NOAA scales](https://www.swpc.noaa.gov/noaa-scales-explanation)
-
-## Customization
-Write your own scripts for things you want to collect in whatever language you want to.
-To add your metrics to this toolset follow the following:
- - Push the metrics to `InfluxDB:xxxx` with `DB=starlink` TODO!!!
- - create a Docker container from your "data collector"
- - add it to the provided `Docker-compose.yml` file. 
- - include the network interface in configuration that all the other containers share to be able to reach the DB
- - HOW TO READ THE INFLUX TOKEN ????
+## Writing your own modules
+The process to creating your own module if pretty straightforward:
+You need to include 2 methods: `setup(conf_s)` and `collect(conf_c)`
+The `setup` method is designed to run one-time preparition that depends on some external factors. A good example might be getting location from the dish for weather collection, or any expensive calls that do not need to be called with each data collection. Should you need to pass it some parameters via a playbook, they will be part of the `conf_s` object
+Returns `void`.
+The `collect` method is called every collection cycle exactly once. Parameters that are needed for every collection should be passed through the `conf_c` object.
+This method returns a `dict()` with collected data. The data will be stored in the same key-value format. 
+Note: The scheduler takes care of injecting timestamps into the collected data object

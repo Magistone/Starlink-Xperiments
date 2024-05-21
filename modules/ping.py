@@ -1,13 +1,19 @@
 import icmplib
 
 def collect_ping_against_target(target: str):
-    icmplib.ping(target, count=1)
+    data = dict()
+    host = icmplib.ping(target, count=3, interval=0.005)
+    data['rtt_ms'] = host.avg_rtt
+    if target != host.address:
+        data['address'] = host.address
+    return data
 
-def setup():
+def setup(setup):
     pass
 
 def collect(config):
-    #parse config
-    #for all targets in config
-    data = collect_ping_against_target("T A R G E T")
+    data = dict()
+    for target in config['targets']:
+        data[target] = collect_ping_against_target(target)
+
     return data
