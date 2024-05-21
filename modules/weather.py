@@ -27,7 +27,7 @@ def collect_weather_data(user_agent) -> int:
             #Success, parse and save data
             if response.status_code == 200 or response.status_code == 203:
                 data = response.json()
-                return data
+                return extract_weather_data(data)
             return None
         case 400:
             print_http_error(response.status_code, "Bad Request")
@@ -50,6 +50,14 @@ def collect_weather_data(user_agent) -> int:
         case _:
             print('The internet is broken! You receive a medal for breaking the internet')
     return None
+
+def extract_weather_data(raw_data):
+    data = {}
+    data_obj = raw_data['properties']['timeseries'][0]['data']
+    data['temperature_C'] = data_obj['instant']['details']['air_temperature']
+    data['cloud_area_fraction_%'] = data_obj['instant']['details']['cloud_area_fraction']
+    data['precipitation_amount_mm'] = data_obj['next_1_hours']['details']['precipitation_amount']
+    return data
 
 def setup(setup):
     global lattitude, longtittude

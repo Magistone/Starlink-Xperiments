@@ -29,6 +29,7 @@ def collect(config):
         data['v6'] = collect_public_ipv6()
     except requests.exceptions.ConnectionError:
         data['v6'] = "Unreachable"
+    reset_forced_version()
     return data
 
 #Any helper/module functions doing work

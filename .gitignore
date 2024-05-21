@@ -9,7 +9,9 @@ TODO
 
 # python stuff
 /vnenv
-/modules/__pycache__
+*/__pycache__
+.pytest_cache
+
 
 # External dependencies
 /modules/grpc.py

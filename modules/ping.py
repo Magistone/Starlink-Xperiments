@@ -1,19 +1,32 @@
 import icmplib
+import asyncio
 
-def collect_ping_against_target(target: str):
+async def collect_ping_against_target(target: str):
     data = dict()
     host = icmplib.ping(target, count=3, interval=0.005)
     data['rtt_ms'] = host.avg_rtt
     if target != host.address:
         data['address'] = host.address
-    return data
+    return (target, data)
 
 def setup(setup):
     pass
 
 def collect(config):
     data = dict()
-    for target in config['targets']:
-        data[target] = collect_ping_against_target(target)
+    results = asyncio.run(run(config['targets']))
+
+    for result in results:
+        data[result[0]] = result[1]
 
     return data
+
+async def run(targets):
+    results = list()
+    tasks = list()
+    for target in targets:
+        tasks.append(asyncio.create_task(collect_ping_against_target(target)))
+    
+    for task in tasks:
+        results.append(await task)
+    return results
