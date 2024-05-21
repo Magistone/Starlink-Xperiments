@@ -33,7 +33,7 @@ Module specific parameters:
 - Recommended period: 30m (MET update period). Querying more often will result in `None` as response
 ### Space Weather
 Collects space weather data on [NOAA Scale](https://www.spaceweather.gov/noaa-scales-explanation)
-Underlying metrics (e.g. proton flux, k-index) are historically available on [spaceweather.gov]
+Underlying metrics (e.g. proton flux, k-index) are historically available on [](spaceweather.gov)
 Module specific parameters:
 - `None`
 

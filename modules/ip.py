@@ -19,7 +19,7 @@ def setup(setup):
     pass
 
 #Required by spec
-def collect():
+def collect(config):
     data = dict()
     try:
         data['v4'] = collect_public_ipv4()

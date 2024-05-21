@@ -13,6 +13,6 @@ def collect_space_weather_data():
 def setup(setup):
     pass
 
-def collect():
+def collect(config):
     data = collect_space_weather_data()
     return data
