@@ -113,10 +113,16 @@ def collect(config):
     #Use get status as not all data are exposed in status_data()
     #Then extract the relevant metrics...
     #... and convert enums to string (OH GOD WHY)
+
+    #try to get data...
     try:
         status = dish.get_status()
-    except (grpc.RpcError, AttributeError, ValueError):
+    #GRPC error - dish might be offline
+    except (grpc.RpcError):
         return None
+    #GRPC protocol changed in incomptible way - CRASH the sub-process -> can't collect anything anyway
+    except (AttributeError, ValueError):
+        raise
     
     data = {
         'alignment': extract_alignment(status),
