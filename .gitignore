@@ -3,6 +3,7 @@ dish.protoset
 grpc_targets.txt
 # Prototype code
 helper.py
+schema_dev.json
 DockerFile-sketch
 # Progress Tracking
 TODO
@@ -10,6 +11,7 @@ TODO
 # python stuff
 /vnenv
 */__pycache__
+__pycache__
 .pytest_cache
 
 
