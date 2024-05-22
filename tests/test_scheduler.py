@@ -59,7 +59,7 @@ def test_full_module_no_config(capsys):
     scheduler.schedule(config)
     output = capsys.readouterr()
     finds = re.findall(r"{'R': '[0-5]', 'S': '[0-5]', 'G': '[0-5]'}", output.out)
-    assert(len(finds) >= 2)
+    assert(len(finds) == 3)
 
 def test_full_module_with_config(capsys):
     target_time = time.gmtime(time.time() + 14)
@@ -76,5 +76,5 @@ def test_full_module_with_config(capsys):
     output = capsys.readouterr()
     finds_8 = re.findall(r"'8\.8\.8\.8': {'rtt_ms': [\d\.]+}", output.out)
     finds_1 = re.findall(r"'1\.1\.1\.1': {'rtt_ms': [\d\.]+}", output.out)
-    assert(len(finds_8) >= 2)
-    assert(len(finds_1) >= 2)
+    assert(len(finds_8) == 3)
+    assert(len(finds_1) == 3)

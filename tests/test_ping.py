@@ -16,7 +16,10 @@ if(conf.ENABLE_PING_MOD_TESTS):
 
     ping.setup(None)
 
-    def test_full_ping():
+    def test_full_ping(capsys):
         values = ping.collect(config)
+        # with capsys.disabled():
+        #     print(values)   
         for key in values.keys():
             assert key in config['targets']
+            assert values[key]['rtt_ms'] >= 0
