@@ -18,7 +18,6 @@ if conf.ENABLE_TRACEROUTE_MOD_TESTS:
     trace.setup(None)
 
     def test_full_trace():
-        return
         print("Hi")
         values = trace.collect(config)
         print("Bye")

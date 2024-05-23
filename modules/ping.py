@@ -3,13 +3,15 @@ import asyncio
 
 async def collect_ping_against_target(target: str):
     data = dict()
-    host = await icmplib.async_ping(target, count=3, interval=0.005)
+    host = await icmplib.async_ping(target, count=1, interval=0.005)
     data['rtt_ms'] = host.avg_rtt
     if target != host.address:
         data['address'] = host.address
     return (target, data)
 
-def setup(setup):
+def setup(setup: dict | None):
+    if isinstance(setup, dict):
+        print(setup.get('test'))
     pass
 
 def collect(config):

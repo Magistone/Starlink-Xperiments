@@ -3,6 +3,7 @@ dish.protoset
 grpc_targets.txt
 # Prototype code
 helper.py
+dump.py
 schema_dev.json
 DockerFile-sketch
 # Progress Tracking
