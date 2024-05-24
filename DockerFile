@@ -1,0 +1,10 @@
+FROM python3.12-alpine
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY main.py ./
+COPY scheduler.py ./
+
+EXPOSE 5000
+ENTRYPOINT [ "flask", "--app", "main", "run" ]

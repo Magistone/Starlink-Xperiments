@@ -24,7 +24,7 @@ def create(module: str, setup: dict | None):
     mod.setup(setup)
     return mod
 
-def run(mod, task_config: dict):
+def run(mod, task_config: dict, is_one_off: bool):
     task_stop_time = task_config.get('stop')
     forever = task_config.get('forever')
     while((not is_time_past_deadline(task_stop_time)) or forever):
@@ -35,14 +35,16 @@ def run(mod, task_config: dict):
         time_diff = (stop_time - start_time)/1e9
 
         sleep_time = task_config['period'] - time_diff
+        if is_one_off:
+            break
         if sleep_time <= 0:
             continue
         time.sleep(sleep_time) # => starts spaced by 'period'
 
-def schedule(config: dict):
+def schedule(config: dict, is_one_off = False):
     delay(config.get('start'))
     mod = create(config['module'], config.get('setup'))
-    run(mod, config)
+    run(mod, config, is_one_off)
 
 def is_time_past_deadline(deadline: str):
     time_struct = time.strptime(deadline, "%a, %d %b %Y %H:%M:%S %Z") #RFC7231, "Sun, 06 Nov 1994 08:49:37 GMT"
