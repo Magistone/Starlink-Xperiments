@@ -3,10 +3,13 @@ import asyncio
 
 async def collect_traceroute_against_target(target: str):
     trace = dict()
-    hops = icmplib.traceroute(target, 1, 0.005) #replace with async when available in icmplib
-    for hop in hops:
-        trace[hop.distance] = {'address': hop.address, 'rtt_ms': hop.avg_rtt}
-    return (target, trace)
+    try:
+        hops = icmplib.traceroute(target, 1, 0.005) #replace with async when available in icmplib
+        for hop in hops:
+            trace[hop.distance] = {'address': hop.address, 'rtt_ms': hop.avg_rtt}
+        return (target, trace)
+    except icmplib.NameLookupError:
+        return (target, None)
 
 def setup(setup):
     pass

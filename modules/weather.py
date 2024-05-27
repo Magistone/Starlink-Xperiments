@@ -67,5 +67,8 @@ def setup(setup):
 
 
 def collect(config):
-    weather = collect_weather_data(config['user_agent'])
-    return weather
+    try:
+        weather = collect_weather_data(config['user_agent'])
+        return weather
+    except requests.RequestException:
+        return None

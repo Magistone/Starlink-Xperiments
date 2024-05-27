@@ -14,5 +14,8 @@ def setup(setup):
     pass
 
 def collect(config):
-    data = collect_space_weather_data()
-    return data
+    try:
+        data = collect_space_weather_data()
+        return data
+    except requests.RequestException:
+        return None
