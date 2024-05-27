@@ -1,11 +1,6 @@
-pyyaml>=6.0.1
-
 icmplib>=3.0.4
-
 requests>=2.31.0
-
 flask>=3.0.3
-
 grpcio>=1.62.1
 yagrc>=1.1.1
 typing_extensions>=4.3.0

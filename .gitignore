@@ -15,6 +15,8 @@ TODO
 __pycache__
 .pytest_cache
 
+# other stuff
+.vscode
 
 # External dependencies
 /modules/grpc.py

@@ -29,7 +29,9 @@ def run(mod, task_config: dict, is_one_off: bool):
     forever = task_config.get('forever')
     while((not is_time_past_deadline(task_stop_time)) or forever):
         start_time = time.time_ns()
+        # Intended to crash the subprocess if module raises an exception
         data = mod.collect(task_config.get('config'))
+        ## TODO: inject metadata (timestamp, ..?)
         write_data(data)
         stop_time = time.time_ns()
         time_diff = (stop_time - start_time)/1e9

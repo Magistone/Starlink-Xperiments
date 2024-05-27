@@ -1,5 +1,9 @@
 from flask import Flask, request
-import multiprocessing, time
+import multiprocessing, time, subprocess, sys
+import scheduler
+from collections import namedtuple
+
+Result = namedtuple('Result', ['result', 'error'])
 
 app = Flask(__name__)
 
@@ -10,18 +14,31 @@ def createJob():
     if not validated['valid']:
         return validated['message'], 400
     
-    #SPAWN PROCESS
-    return "OK", 200
+    process = multiprocessing.Process(target=scheduler.schedule, args=(params,))
+    process.start()
+
+    #Quickly check whether spawned job crashed
+    time.sleep(2)
+    if process.is_alive():
+        return "OK\n", 200
+    return "Error", 500
 
 @app.post("/install")
 def installDependencies():
-    pass
+    params:dict = request.get_json()
+    inst, err = install_dependencies(params)    
+    
+    return f'Installed: {",".join(map(str, inst))}\nFailed to install: {",".join(map(str, err))}\n', 200 if len(err) == 0 else 400
 
 @app.post("/reboot")
 def reboot():
     config = create_min_config()
     config['config']['reboot'] = True
-    #PASS to scheduler
+
+    process = multiprocessing.Process(target=scheduler.schedule,args=(config, True))
+    process.start()
+
+    return 'Accepted\n', 202
 
 @app.post("/stow")
 def stow():
@@ -29,7 +46,11 @@ def stow():
     obj = request.get_json()
     config['config']['stow_operation'] = obj.get('stow')
     config['config']['stow'] = True
-    #PASS to scheduler
+
+    process = multiprocessing.Process(target=scheduler.schedule,args=(config, True))
+    process.start()
+
+    return 'Accepted\n', 202
 
 @app.post("/validate")
 def debug():
@@ -38,7 +59,22 @@ def debug():
     status = 200
     if not response['valid']:
         status = 400
-    return response['message'], status
+    return response['message']+'\n', status
+
+
+### methods that take care of small amount of processing. Not I/O dependent - easy to test
+
+def install_dependencies(params: dict):
+    installed = list()
+    err = list()
+    for mod in params.get('modules'):
+        try:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', mod])
+            installed.append(mod)
+        except:
+            err.append(mod)
+
+    return Result(installed, err)
 
 def validate_params(obj: dict):
     mod = obj.get('module')     #REQUIRED
