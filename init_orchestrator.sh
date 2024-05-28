@@ -6,3 +6,7 @@ wget https://raw.githubusercontent.com/sparky8512/starlink-grpc-tools/main/starl
 #generate SSH key
 
 #Install orchestrator
+
+#Create image for workers
+docker build -f Dockerfile -t starlinktool --network=host  .
+docker save -o image.tar starlinktool

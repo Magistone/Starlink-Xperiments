@@ -19,31 +19,36 @@ full_config = {
 def test_delay():
     target_time = time.gmtime(time.time() + 10)
     time_str = time.strftime("%a, %d %b %Y %H:%M:%S %Z", target_time)
-    scheduler.delay(time_str)
+    inst = scheduler.Scheduler('delay', time_str, None, None, [], False)
+    inst.delay()
     curr_time = time.gmtime(time.time())
     assert(curr_time >= target_time)
 
 def test_create():
-    mod = scheduler.create('ip', None)
+    inst = scheduler.Scheduler('ip', None, None, None, [], False)
+    mod = inst.create()
     data = mod.collect(None)
     for key in data.keys():
         assert(key in ['v4', 'v6'])
 
 def test_create_non_existent():
+    inst = scheduler.Scheduler('non_existent', None, None, None, [], False)
     try:
-        mod = scheduler.create('non_existent', None)
+        mod = inst.create()
         assert(False)
     except:
         pass
 
 def test_time_past_true():
-    resp = scheduler.is_time_past_deadline("Sun, 06 Nov 1994 08:49:37 GMT")
+    inst = scheduler.Scheduler('non_existent', None, None, None, [], False)
+    resp = inst.is_time_past_deadline("Sun, 06 Nov 1994 08:49:37 GMT")
     assert(resp)
 
 def test_time_past_false():
     target_time = time.gmtime(time.time() + 100)
     time_str = time.strftime("%a, %d %b %Y %H:%M:%S %Z", target_time)
-    resp = scheduler.is_time_past_deadline(time_str)
+    inst = scheduler.Scheduler('non_existent', None, None, None, [], False)
+    resp = inst.is_time_past_deadline(time_str)
     assert(not resp)
 
 def test_full_module_no_config(capsys):

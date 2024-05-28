@@ -3,8 +3,7 @@ FROM python:3.12-alpine
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py ./
-COPY scheduler.py ./
+COPY main.py scheduler.py db.py ./
 
 # Unlike test image, modules are not copied in
 # Instead, they are mounted at ./modules via compose to allow easy addition
