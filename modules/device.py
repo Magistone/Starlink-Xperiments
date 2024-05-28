@@ -15,8 +15,10 @@ def extract_alignment(raw_data):
             'tilt_angle_deg': getattr(raw_data.alignment_stats, 'tilt_angle_deg', 0),
             'azimuth_deg': getattr(raw_data.alignment_stats, 'boresight_azimuth_deg', 0),
             'elevation_deg': getattr(raw_data.alignment_stats, 'boresight_elevation_deg', 0),
-            'desired_azimuth_deg': getattr(raw_data.alignment_stats, 'desired_boresight_azimuth_deg', 0),
-            'desired_elevation_deg': getattr(raw_data.alignment_stats, 'desired_boresight_elevation_deg', 0),
+            'desired': { 
+                'azimuth_deg': getattr(raw_data.alignment_stats, 'desired_boresight_azimuth_deg', 0),
+                'elevation_deg': getattr(raw_data.alignment_stats, 'desired_boresight_elevation_deg', 0),
+                },
             'attitude_uncertainty_deg': getattr(raw_data.alignment_stats, 'attitude_uncertainty_deg', 0),
         }
         try:
@@ -31,13 +33,13 @@ def extract_network(raw_data):
     data = {}
     data['cell_disabled'] = getattr(raw_data, 'is_cell_disabled', False)
     data['snr_persistently_low'] = getattr(raw_data, 'is_snr_persistently_low', False)
-    data['snr_above_noisefloor'] = getattr(raw_data, 'is_snr_above_noisefloor', True)
+    data['snr_above_noise_floor'] = getattr(raw_data, 'is_snr_above_noise_floor', False)
     data['pop_ping_ms'] = getattr(raw_data, 'pop_ping_latency_ms', 0)
-    data['pop_ping_drop_rate'] = getattr(raw_data, 'pop_ping_drop_rate', 0)
+    data['pop_ping_drop_rate_percent'] = getattr(raw_data, 'pop_ping_drop_rate', 0)*100
     data['seconds_to_non_empty_slot'] = getattr(raw_data, 'seconds_to_first_non_empty_slot', 0)
-    data['throughtput'] = {}
-    data['throughtput']['down_bps'] = getattr(raw_data, 'downlink_throughtput_bps', 0)
-    data['throughtput']['up_bps'] = getattr(raw_data, 'uplink_throughtput_bps', 0)
+    data['throughput'] = {}
+    data['throughput']['down_bps'] = getattr(raw_data, 'downlink_throughput_bps', 0)
+    data['throughput']['up_bps'] = getattr(raw_data, 'uplink_throughput_bps', 0)
 
     return data
 
@@ -72,7 +74,7 @@ def extract_info(raw_data):
     #extract device_info partially
     if raw_data.HasField('device_info'):
         data['id'] = getattr(raw_data.device_info, 'id', 'UNKNOWN')
-        version = re.match('^[^\.]+', getattr(raw_data.device_info, 'software_version', 'UNKNOWN'))
+        version = re.match('^[^\\.]+', getattr(raw_data.device_info, 'software_version', 'UNKNOWN'))
         data['software']['version'] = 'UNKNOWN' if version == None else version.group()
         data['country'] = getattr(raw_data.device_info, 'country_code', '??')
     
@@ -135,7 +137,7 @@ def collect(config):
     #find keys with no value (None)
     to_delete = list()
     for key in data.keys():
-        if data[key] == None:
+        if not data[key]:
             to_delete.append(key)
     #Delete them
     for key in to_delete:
@@ -155,7 +157,7 @@ def collect(config):
 # pop_ping_drop_rate                    YES (float)                             network                 X
 # obstruction_stats                     NO, dish.get_obstruction_map()          ----
 # alerts                                YES (obj of bools)                      alerts                  X
-# {downlink, uplink}_throughtput_bps    YES (float)                             network                 X
+# {downlink, uplink}_throughput_bps     YES (float)                             network                 X
 # pop_ping_latency_ms                   YES (float)                             network                 X
 # stow_requested                        NO                                      ----
 # boresight_{azimuth, elevation}_deg    NO, see alignemnt_stats                 ----

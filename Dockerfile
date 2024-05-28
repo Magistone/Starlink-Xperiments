@@ -11,4 +11,4 @@ COPY scheduler.py ./
 # of new modules
 
 EXPOSE 5000
-ENTRYPOINT [ "flask", "--app", "main", "run" ]
+ENTRYPOINT [ "flask", "--app", "main", "run", "--host=0.0.0.0"]

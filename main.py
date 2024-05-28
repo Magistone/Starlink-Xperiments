@@ -18,10 +18,10 @@ def createJob():
     process.start()
 
     #Quickly check whether spawned job crashed
-    time.sleep(2)
+    time.sleep(1)
     if process.is_alive():
         return "OK\n", 200
-    return "Error", 500
+    return "Error\n", 500
 
 @app.post("/install")
 def installDependencies():

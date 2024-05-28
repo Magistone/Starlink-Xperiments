@@ -3,8 +3,12 @@ import time
 
 
 def write_data(data):
-    #MongoDB writer
+    #TODO MongoDB writer
     print(data)
+
+def inject_meta_data(data):
+    #TODO
+    return data
 
 def delay(start_time: str | None):
     #delay starting scheduled tasks
@@ -31,7 +35,7 @@ def run(mod, task_config: dict, is_one_off: bool):
         start_time = time.time_ns()
         # Intended to crash the subprocess if module raises an exception
         data = mod.collect(task_config.get('config'))
-        ## TODO: inject metadata (timestamp, ..?)
+        data = inject_meta_data(data)
         write_data(data)
         stop_time = time.time_ns()
         time_diff = (stop_time - start_time)/1e9
@@ -48,7 +52,9 @@ def schedule(config: dict, is_one_off = False):
     mod = create(config['module'], config.get('setup'))
     run(mod, config, is_one_off)
 
-def is_time_past_deadline(deadline: str):
+def is_time_past_deadline(deadline: str | None):
+    if deadline == None:
+        return True
     time_struct = time.strptime(deadline, "%a, %d %b %Y %H:%M:%S %Z") #RFC7231, "Sun, 06 Nov 1994 08:49:37 GMT"
     target_timestamp = round(time.mktime(time_struct))
     current_timestamp = round(time.mktime(time.gmtime())) # DO NOT GET TIME with time.time() - it's wrong value
