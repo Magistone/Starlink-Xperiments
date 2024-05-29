@@ -1,5 +1,6 @@
 import requests
 import time
+import math
 import modules.grpc as dish
 
 ### Helper functions
@@ -11,7 +12,7 @@ last_modified = 'Mon, 29 Apr 2024 12:32:47 GMT' #random date used for initial ca
 lattitude = 0
 longtittude = 0
 
-def collect_weather_data(user_agent) -> int:
+def collect_weather_data(user_agent):
     global last_modified
     headers = {'user-agent': user_agent, 'if-modified-since': last_modified}
 
@@ -54,9 +55,10 @@ def collect_weather_data(user_agent) -> int:
 def extract_weather_data(raw_data):
     data = {}
     data_obj = raw_data['properties']['timeseries'][0]['data']
-    data['temperature_C'] = data_obj['instant']['details']['air_temperature']
-    data['cloud_area_fraction_%'] = data_obj['instant']['details']['cloud_area_fraction']
-    data['precipitation_amount_mm'] = data_obj['next_1_hours']['details']['precipitation_amount']
+    units = raw_data['properties']['meta']['units']
+    data[f'temperature_{units['air_temperature']}'] = data_obj['instant']['details']['air_temperature']
+    data[f'cloud_area_fraction_{units['cloud_area_fraction']}'] = data_obj['instant']['details']['cloud_area_fraction']
+    data[f'precipitation_amount_{units['precipitation_amount']}'] = data_obj['next_1_hours']['details']['precipitation_amount']
     return data
 
 def setup(setup):
@@ -69,6 +71,10 @@ def setup(setup):
 def collect(config):
     try:
         weather = collect_weather_data(config['user_agent'])
+        if weather:
+            weather['metadata'] = dict()
+            weather['metadata']['longtitude'] = longtittude
+            weather['metadata']['latitude'] = lattitude
         return weather
     except requests.RequestException:
         return None

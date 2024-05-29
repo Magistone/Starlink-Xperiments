@@ -3,13 +3,17 @@ import time, datetime
 import db
 
 class Scheduler:
-    def __init__(self, module_name:str, start:str, config:dict|None, setup:dict|None, tags:list|None, is_one_off: bool) -> None:
+    def __init__(self, module_name:str, start:str, config:dict|None, setup:dict|None, tags:dict|None, is_one_off: bool, dbg = False) -> None:
         self.module_name = module_name
         self.start = start
         self.config = config
         self.setup = setup
         self.tags = tags
         self.is_one_off = is_one_off
+        self.dbg = dbg
+        if not self.dbg:
+            #Create DB connection
+            pass
 
     def save_data(self, data:None|dict|list[dict]):
         if not data:
@@ -19,15 +23,23 @@ class Scheduler:
         else:
             ready_data = self.inject_meta_data(data)
 
-        #TODO MongoDB writer
+        if self.dbg:
+            print(ready_data)
+        else:
+            #print(ready_data)
+            #TODO MongoDB writer
+            pass
 
-        print(ready_data)
 
     def inject_meta_data(self, data:dict):
         if not data.get('metadata'):
             data['metadata'] = dict()
         
-        #TODO Inject tags + name
+        #Inject tags + name
+        data['metadata']['job_name'] = self.module_name
+        if self.tags:
+            for k,v in self.tags.items():
+                data['metadata'][k] = v
 
         #Inject timestamp
         data['timestamp'] = datetime.datetime.now(datetime.timezone.utc)
@@ -80,7 +92,7 @@ class Scheduler:
         return diff < 0
 
 
-def schedule(config: dict, is_one_off = False):
-    scheduler = Scheduler(config['module'], config.get('start'), config, config.get('setup'), config.get('tags'), is_one_off)
+def schedule(config: dict, is_one_off = False, dbg = False):
+    scheduler = Scheduler(config['module'], config.get('start'), config, config.get('setup'), config.get('tags'), is_one_off, dbg)
     scheduler.delay()
     scheduler.run()

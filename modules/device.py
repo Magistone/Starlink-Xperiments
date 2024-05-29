@@ -2,6 +2,9 @@ import modules.grpc as dish
 import grpc
 from yagrc import importer
 import re
+from collections import namedtuple
+
+Info = namedtuple('Dish_info', ['id', 'data'])
 
 importer.add_lazy_packages(["spacex.api.device", "spacex.api.satellites.network"])
 from spacex.api.device import dish_pb2 # type: ignore
@@ -73,7 +76,7 @@ def extract_info(raw_data):
 
     #extract device_info partially
     if raw_data.HasField('device_info'):
-        data['id'] = getattr(raw_data.device_info, 'id', 'UNKNOWN')
+        id = getattr(raw_data.device_info, 'id', 'UNKNOWN')
         version = re.match('^[^\\.]+', getattr(raw_data.device_info, 'software_version', 'UNKNOWN'))
         data['software']['version'] = 'UNKNOWN' if version == None else version.group()
         data['country'] = getattr(raw_data.device_info, 'country_code', '??')
@@ -103,7 +106,7 @@ def extract_info(raw_data):
     except ValueError:
         data['mobility_class'] = 'UNKNOWN'
     
-    return data
+    return Info(id, data)
 
 
 def setup(setup):
@@ -126,12 +129,15 @@ def collect(config):
     except (AttributeError, ValueError):
         raise
     
+    info_data = extract_info(status)
+
     data = {
+        'metadata': {'dish_id': info_data.id},
         'alignment': extract_alignment(status),
         'network': extract_network(status),
         'alerts': extract_alerts(status),
         'outage': extract_outage(status),
-        'info': extract_info(status)
+        'info': info_data.data
     }
 
     #find keys with no value (None)

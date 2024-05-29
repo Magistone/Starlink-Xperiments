@@ -20,6 +20,6 @@ if(conf.ENABLE_PING_MOD_TESTS):
         values = ping.collect(config)
         # with capsys.disabled():
         #     print(values)   
-        for key in values.keys():
-            assert key in config['targets']
-            assert values[key]['rtt_ms'] >= 0
+        for entry in values:
+            assert entry['metadata']['target'] in config['targets']
+            assert entry['rtt_ms'] >= 0

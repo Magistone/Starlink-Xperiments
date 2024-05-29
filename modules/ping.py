@@ -1,5 +1,8 @@
 import icmplib
 import asyncio
+from collections import namedtuple
+
+pingResult = namedtuple('pingResult', ['target', 'ping'])
 
 async def collect_ping_against_target(target: str):
     data = dict()
@@ -8,9 +11,9 @@ async def collect_ping_against_target(target: str):
         data['rtt_ms'] = host.avg_rtt
         if target != host.address:
             data['address'] = host.address
-        return (target, data)
+        return pingResult(target, data)
     except icmplib.NameLookupError:
-        return (target, None)
+        return pingResult(target, None)
 
 def setup(setup: dict | None):
     if isinstance(setup, dict):
@@ -18,11 +21,15 @@ def setup(setup: dict | None):
     pass
 
 def collect(config):
-    data = dict()
-    results = asyncio.run(run(config['targets']))
+    data = list()
+    results:list[pingResult] = asyncio.run(run(config['targets']))
 
     for result in results:
-        data[result[0]] = result[1]
+        if result.ping:
+            data_point = result.ping
+            data_point['metadata'] = dict()
+            data_point['metadata']['target'] = result.target
+            data.append(data_point)
 
     return data
 

@@ -21,5 +21,5 @@ if conf.ENABLE_TRACEROUTE_MOD_TESTS:
         print("Hi")
         values = trace.collect(config)
         print("Bye")
-        for key in values.keys():
-            assert key in config['targets']
+        for point in values:
+            assert point['metadata']['target'] in config['targets']
