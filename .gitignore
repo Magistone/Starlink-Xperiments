@@ -18,6 +18,7 @@ __pycache__
 # other stuff
 .vscode
 image.tar
+nodes_stuff_needs_doing
 
 # External dependencies
 /modules/grpc.py
