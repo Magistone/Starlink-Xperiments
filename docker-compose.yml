@@ -1,0 +1,36 @@
+services:
+  mongo:
+    image: "mongodb/mongodb-community-server:7.0.11-ubi8"
+    volumes:
+      - db-data:/data/db
+    networks:
+      - ip6net
+    ports:
+      - 127.0.0.1:27017:27017
+
+  runner:
+    image: "starlinktool"
+    privileged: true
+    volumes:
+      - type: bind
+        source: ./modules
+        target: /modules
+    networks:
+      - ip6net
+    ports:
+      - 127.0.0.1:6969:5000
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    depends_on:
+      - mongo
+
+volumes:
+  db-data:
+
+networks:
+  ip6net:
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: fda5:1118:2c2f:0002::/64

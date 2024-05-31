@@ -12,8 +12,7 @@ class Scheduler:
         self.is_one_off = is_one_off
         self.dbg = dbg
         if not self.dbg:
-            #Create DB connection
-            pass
+            db.connect()
 
     def save_data(self, data:None|dict|list[dict]):
         if not data:
@@ -26,9 +25,7 @@ class Scheduler:
         if self.dbg:
             print(ready_data)
         else:
-            #print(ready_data)
-            #TODO MongoDB writer
-            pass
+            db.write_data(ready_data, self.module_name)
 
 
     def inject_meta_data(self, data:dict):
