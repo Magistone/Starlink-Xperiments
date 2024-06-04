@@ -10,7 +10,7 @@ def connect():
     db = client['starlink']
 
 def write_data(data: dict | list, collection: str):
-    check_or_create_collection(str)
+    check_or_create_collection(collection)
     if isinstance(data, list):
         db[collection].insert_many(data)
     else:

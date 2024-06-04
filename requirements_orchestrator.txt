@@ -1,1 +1,1 @@
-pytest>=8.2.1
+ansible>=9.6.0
