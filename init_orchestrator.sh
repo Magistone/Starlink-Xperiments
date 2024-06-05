@@ -11,4 +11,5 @@ pip install -r requirements_orchestrator.txt
 
 #Create image for workers
 docker build -f Dockerfile -t starlinktool --network=host  .
+echo "Exporting image.."
 docker save -o image.tar starlinktool

@@ -19,6 +19,11 @@ __pycache__
 .vscode
 image.tar
 nodes_stuff_needs_doing
+dump.json
 
 # External dependencies
 /modules/grpc.py
+
+#Ansible dev
+/ansible/basic_playbook.yml
+/ansible/a_password_file
