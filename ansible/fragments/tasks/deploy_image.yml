@@ -1,0 +1,38 @@
+- name: Copy docker image
+  become: false
+  ansible.builtin.copy:
+    src: '{{playbook_dir}}/../image.tar'
+    dest: ~/starlinktool/image.tar
+    mode: preserve
+
+- name: Check starlinktool container
+  community.docker.docker_container_info:
+    name: starlinktool-runner-1
+  register: container
+
+- name: Compose stop & remove container
+  when: container.exists
+  block:
+    - name: Stop compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ansible_env['PWD']}}/starlinktool"
+        state: stopped
+    - name: Remove Container
+      community.docker.docker_container:
+        name: starlinktool-runner-1
+        state: absent
+
+- name: Remove image
+  community.docker.docker_image:
+    name: starlinktool
+    tag: latest
+    state: absent
+
+- name: Load docker image
+  community.docker.docker_image_load:
+    path: "{{ansible_env['PWD']}}/starlinktool/image.tar"
+
+- name: Start compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ansible_env['PWD']}}/starlinktool"
+    state: present

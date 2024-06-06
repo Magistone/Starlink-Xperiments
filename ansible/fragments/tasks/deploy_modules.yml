@@ -1,0 +1,6 @@
+- name: Copy tool modules
+  become: false
+  ansible.builtin.copy:
+    src: '{{playbook_dir}}/../modules'
+    dest: ~/starlinktool
+    mode: preserve

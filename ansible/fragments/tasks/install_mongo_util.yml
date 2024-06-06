@@ -1,0 +1,28 @@
+- name: Add mongo GPG Key
+  ansible.builtin.get_url:
+    url: https://www.mongodb.org/static/pgp/server-7.0.asc
+    dest: /etc/apt/trusted.gpg.d/server-7.0.asc
+
+- name: Add mongo repo (not noble)
+  when: ansible_lsb['codename'] != 'noble'
+  ansible.builtin.apt_repository:
+    repo: deb [arch={{deb_architecture[ansible_architecture]}}] https://repo.mongodb.org/apt/ubuntu {{ansible_lsb['codename']}}/mongodb-org/7.0 multiverse
+    state: present
+
+- name: Add mongo repo (noble)
+  when: ansible_lsb['codename'] == 'noble'
+  ansible.builtin.apt_repository:
+    repo: deb [arch={{deb_architecture[ansible_architecture]}}] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse
+    state: present
+      
+- name: Install mongosh
+  ansible.builtin.apt:
+    name:
+      - mongodb-mongosh
+    update_cache: true
+    state: present
+
+- name: Install mongodb tools
+  ansible.builtin.apt:
+    deb: https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.9.4.deb
+    state: present

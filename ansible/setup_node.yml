@@ -13,83 +13,24 @@
     }
 
   tasks:
-  - name: Get docker GPG key
-    ansible.builtin.get_url:
-      url: https://download.docker.com/linux/ubuntu/gpg
-      dest: /etc/apt/keyrings/docker.asc
+  - import_tasks: fragments/tasks/install_docker.yml
 
-  - name: Add docker repo (not noble)
-    when: ansible_lsb['codename'] != 'noble'
-    ansible.builtin.apt_repository:
-      repo: deb [arch={{deb_architecture[ansible_architecture]}} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ansible_lsb['codename']}} stable
-      state: present
-      filename: docker
-
-  - name: Add docker repo (noble)
-    when: ansible_lsb['codename'] == 'noble'
-    ansible.builtin.apt_repository:
-      repo: deb [arch={{deb_architecture[ansible_architecture]}} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu jammy stable
-      state: present
-      filename: docker
-
-  - name: Install docker
-    ansible.builtin.apt:
-      name:
-        - docker-ce 
-        - docker-ce-cli 
-        - containerd.io 
-        - docker-buildx-plugin 
-        - docker-compose-plugin
-      update_cache: true
-      state: present
-
-
-  - name: Add mongo GPG Key
-    ansible.builtin.get_url:
-      url: https://www.mongodb.org/static/pgp/server-7.0.asc
-      dest: /etc/apt/trusted.gpg.d/server-7.0.asc
-
-  - name: Add mongo repo (not noble)
-    when: ansible_lsb['codename'] != 'noble'
-    ansible.builtin.apt_repository:
-      repo: deb [arch={{deb_architecture[ansible_architecture]}}] https://repo.mongodb.org/apt/ubuntu {{ansible_lsb['codename']}}/mongodb-org/7.0 multiverse
-      state: present
-
-  - name: Add mongo repo (noble)
-    when: ansible_lsb['codename'] == 'noble'
-    ansible.builtin.apt_repository:
-      repo: deb [arch={{deb_architecture[ansible_architecture]}}] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse
-      state: present
-        
-  - name: Install mongosh
-    ansible.builtin.apt:
-      name:
-        - mongodb-mongosh
-      update_cache: true
-      state: present
-
-  - name: Install mongodb tools
-    ansible.builtin.apt:
-      deb: https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.9.4.deb
-      state: present
+  - import_tasks: fragments/tasks/install_mongo_util.yml
 
   - name: Configure docker
     ansible.builtin.template:
       src: templates/docker.j2
       dest: /etc/docker/daemon.json
+    register: docker_conf
 
   - name: Restart docker
     ansible.builtin.service:
       name: docker
       state: restarted
+    when: docker_conf['changed']
 
 
-  - name: Copy tool modules
-    become: false
-    ansible.builtin.copy:
-      src: '{{playbook_dir}}/../modules'
-      dest: ~/starlinktool
-      mode: preserve
+  - import_tasks: fragments/tasks/deploy_modules.yml
 
   - name: Copy docker compose
     become: false
@@ -98,17 +39,4 @@
       dest: ~/starlinktool/docker-compose.yml
       mode: preserve
 
-  - name: Copy docker image
-    become: false
-    ansible.builtin.copy:
-      src: '{{playbook_dir}}/../image.tar'
-      dest: ~/starlinktool/image.tar
-      mode: preserve
-
-  - name: Load docker image
-    community.docker.docker_image_load:
-      path: "{{ansible_env['PWD']}}/starlinktool/image.tar"
-
-  - name: Start tools
-    community.docker.docker_compose_v2:
-      project_src: "{{ansible_env['PWD']}}/starlinktool"
+  - import_tasks: fragments/tasks/deploy_image.yml

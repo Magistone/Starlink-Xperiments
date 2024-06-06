@@ -9,7 +9,10 @@ ssh-keygen -f ~/.ssh/starlinktool -t ed25519 -N ""
 #Install orchestrator
 pip install -r requirements_orchestrator.txt 
 
+#We need docker locally...
+ansible-playbook ./ansible/orchestrator.yml -i localhost, --ask-become-pass
+
 #Create image for workers
-docker build -f Dockerfile -t starlinktool --network=host  .
+sudo docker build -f Dockerfile -t starlinktool --network=host  .
 echo "Exporting image.."
-docker save -o image.tar starlinktool
+sudo docker save -o image.tar starlinktool

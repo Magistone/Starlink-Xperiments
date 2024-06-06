@@ -1,0 +1,15 @@
+- name: Collect measurements (JSON)
+  hosts: nodes
+  gather_facts: false
+
+  tasks:
+  - name: Dump collections to JSON
+    community.mongodb.mongodb_shell:
+      mongo_cmd: mongosh
+      db: starlink
+      eval: "db.adminCommand('listCollections')"
+    register: result
+
+  - name: dbg
+    ansible.builtin.debug:
+      var: result

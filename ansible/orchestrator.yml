@@ -1,0 +1,16 @@
+- name: Orchestrator setup
+  hosts: localhost
+  connection: local
+  become: true
+
+  vars:
+    deb_architecture: { 
+      "armv6l": "armhf", 
+      "armv7l": "armhf", 
+      "aarch64": "arm64", 
+      "x86_64": "amd64", 
+      "i386": "i386" 
+    }
+
+  tasks:
+    - import_tasks: fragments/tasks/install_docker.yml

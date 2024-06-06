@@ -33,4 +33,4 @@ networks:
     enable_ipv6: true
     ipam:
       config:
-        - subnet: fda5:1118:2c2f:0002::/64
+        - subnet: fda5:1118:2c2f:babe::/64
