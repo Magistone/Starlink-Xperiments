@@ -1,0 +1,8 @@
+- import_tasks: base.yml
+  vars:
+    module: weather
+    period_seconds: 1800
+    measurement_tags:
+      machine: "{{inventory_hostname}}"
+    runtime_config:
+      user_agent: "starlinktools/test user@email.xyz"

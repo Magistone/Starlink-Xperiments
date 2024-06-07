@@ -1,0 +1,12 @@
+- import_tasks: base.yml
+  vars:
+    module: traceroute
+    period_seconds: 15
+    measurement_tags:
+      machine: "{{inventory_hostname}}"
+    runtime_config:
+      targets:
+        - '1.1.1.1'
+        - '8.8.8.8'
+        - 'csgate.cs.uni-sb.de'
+        - '2606:4700:4700::1111'

@@ -10,6 +10,7 @@ app = Flask(__name__)
 @app.post("/create")
 def createJob():
     params = request.get_json()
+    print(params)
     validated = validate_params(params)
     if not validated['valid']:
         return validated['message'], 400
@@ -88,23 +89,23 @@ def validate_params(obj: dict):
     valid = True
     msg = "Invalid configuration."
 
-    if stop == None and forever != True:
+    if not stop and forever != True:
         valid = False
         msg += " Requires one of: stop, forever."
 
-    if stop != None and not validate_date_format(stop):
+    if stop and not validate_date_format(stop):
         valid = False
         msg += " Invalid format for stop time."
     
-    if start != None and not validate_date_format(start):
+    if start and not validate_date_format(start):
         valid = False
         msg += " Invalid format for start time."
 
-    if mod == None:
+    if not mod:
         valid = False
         msg += " Requires module parameter."
     
-    if per == None:
+    if not per:
         valid = False
         msg += " Requires period parameter."
     else:

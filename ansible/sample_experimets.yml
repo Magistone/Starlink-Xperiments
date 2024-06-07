@@ -1,0 +1,9 @@
+---
+- name: Run experiments
+  hosts: nodes
+  gather_facts: false
+
+  tasks:
+    - import_tasks: fragments/jobs/ip.yml
+      vars:
+        stop_time: "FRI, 07 JUN 2024 10:45:00 GMT"

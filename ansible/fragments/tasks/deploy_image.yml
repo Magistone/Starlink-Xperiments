@@ -22,13 +22,13 @@
         name: starlinktool-runner-1
         state: absent
 
-- name: Remove image
+- name: Remove old image from docker
   community.docker.docker_image:
     name: starlinktool
     tag: latest
     state: absent
 
-- name: Load docker image
+- name: Load new docker image
   community.docker.docker_image_load:
     path: "{{ansible_env['PWD']}}/starlinktool/image.tar"
 

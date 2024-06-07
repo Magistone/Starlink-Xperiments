@@ -1,0 +1,4 @@
+- import_tasks: base.yml
+  vars:
+    path: stow
+    stow_the_dish: true

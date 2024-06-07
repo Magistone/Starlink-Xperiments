@@ -7,9 +7,14 @@
     community.mongodb.mongodb_shell:
       mongo_cmd: mongosh
       db: starlink
-      eval: "db.adminCommand('listCollections')"
+      eval: "db.runCommand('listCollections')"
     register: result
 
   - name: dbg
     ansible.builtin.debug:
-      var: result
+      msg: "{{item.name}}"
+    with_items: "{{result.transformed_output.cursor.firstBatch}}"
+    when: item.type == 'timeseries'
+
+    #condition on item.type = timeseries
+    #extract using shell 

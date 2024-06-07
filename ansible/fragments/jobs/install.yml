@@ -1,0 +1,5 @@
+- import_tasks: base.yml
+  vars:
+    path: install
+    modules_to_install:
+      - numpy

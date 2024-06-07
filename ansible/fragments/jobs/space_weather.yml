@@ -1,0 +1,6 @@
+- import_tasks: base.yml
+  vars:
+    module: space_weather
+    period_seconds: 5
+    measurement_tags:
+      machine: "{{inventory_hostname}}"

@@ -1,0 +1,23 @@
+# This is the base file that implements the most basic functionality
+# You should not need to edit it
+# IF you have created your own custom module, look at included ones (like ping.yml) to see usage
+- name: Start {{module}} experiment
+  ansible.builtin.uri:
+    url: http://127.0.0.1:6969/{{path | default('create')}}
+    method: POST
+    body_format: json
+    body:
+      module: "{{module}}"
+      start: "{{start_time | default(None)}}"
+      stop: "{{stop_time | default(None)}}"
+      period: "{{period_seconds | default(3600)}}"
+      forever: "{{run_forever | default(False)}}"
+      setup: "{{setup_config | default({})}}"
+      config: "{{runtime_config | default({})}}"
+      tags: "{{measurement_tags | default({})}}"
+      stow: "{{stow_the_dish | default(False)}}"
+      modules: "{{modules_to_install | default(None)}}"
+    headers:
+      Content-type: Application/json
+      accept: application/json
+    return_content: true

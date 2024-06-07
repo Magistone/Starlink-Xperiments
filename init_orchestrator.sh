@@ -14,5 +14,6 @@ ansible-playbook ./ansible/orchestrator.yml -i localhost, --ask-become-pass
 
 #Create image for workers
 sudo docker build -f Dockerfile -t starlinktool --network=host  .
-echo "Exporting image.."
+echo -e "\n\nExporting image.."
 sudo docker save -o image.tar starlinktool
+sudo chmod 644 image.tar

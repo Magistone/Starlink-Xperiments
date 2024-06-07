@@ -11,6 +11,9 @@ class Scheduler:
         self.tags = tags
         self.is_one_off = is_one_off
         self.dbg = dbg
+
+        if isinstance(self.config['period'], str):
+            self.config['period'] = float(self.config['period'])
         if not self.dbg:
             db.connect()
 
@@ -44,7 +47,7 @@ class Scheduler:
 
     def delay(self):
         #delay starting scheduled tasks
-        if self.start == None:
+        if not self.start:
             return
         
         time_struct = time.strptime(self.start, "%a, %d %b %Y %H:%M:%S %Z") #RFC7231, "Sun, 06 Nov 1994 08:49:37 GMT"
@@ -80,7 +83,7 @@ class Scheduler:
             time.sleep(sleep_time) # => starts spaced by 'period'
 
     def is_time_past_deadline(_self, deadline: str | None):
-        if deadline == None:
+        if not deadline:
             return True
         time_struct = time.strptime(deadline, "%a, %d %b %Y %H:%M:%S %Z") #RFC7231, "Sun, 06 Nov 1994 08:49:37 GMT"
         target_timestamp = round(time.mktime(time_struct))

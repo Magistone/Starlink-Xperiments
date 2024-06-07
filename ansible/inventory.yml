@@ -2,13 +2,19 @@ nodes:
   hosts:
     ubuntu_24: 
       name: test_machine
-      ansible_host: fe80::215:5dff:fe80:100%eth0
-    ubuntu_22:
+      ansible_host: fe80::215:5dff:fe80:104%eth0
+    ubuntu_22-1:
       name: jammy
-      ansible_host: fe80::215:5dff:fe80:101%eth0
+      ansible_host: fe80::215:5dff:fe80:105%eth0
+    ubuntu_22-2:
+      name: jammy-2
+      ansible_host: fe80::215:5dff:fe80:106%eth0
+    ubuntu_22-3:
+      name: jammy-3
+      ansible_host: fe80::215:5dff:fe80:107%eth0
   vars:
     ansible_ssh_private_key_file: ~/.ssh/starlinktool
-    ansible_user: user
+    ansible_user: magistone
     ansible_become_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           32333335383336346231616330323437313934363137396232393163333966353236346536643738

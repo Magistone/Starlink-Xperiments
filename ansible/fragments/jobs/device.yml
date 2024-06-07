@@ -1,0 +1,6 @@
+- import_tasks: base.yml
+  vars:
+    module: device
+    period_seconds: 1
+    measurement_tags:
+      machine: "{{inventory_hostname}}"
