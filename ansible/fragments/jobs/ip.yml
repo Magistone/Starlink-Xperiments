@@ -2,5 +2,6 @@
   vars:
     module: ip
     period_seconds: 15
-    measurement_tags:
+    fixed_tags: 
       machine: "{{inventory_hostname}}"
+    measurement_tags: "{{ fixed_tags | ansible.builtin.combine(tag_with | default(None))}}"

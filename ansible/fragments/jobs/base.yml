@@ -2,6 +2,8 @@
 # You should not need to edit it
 # IF you have created your own custom module, look at included ones (like ping.yml) to see usage
 - name: Start {{module}} experiment
+  # ansible.builtin.debug:
+  #   var: measurement_tags
   ansible.builtin.uri:
     url: http://127.0.0.1:6969/{{path | default('create')}}
     method: POST

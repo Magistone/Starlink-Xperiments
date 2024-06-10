@@ -1,8 +1,8 @@
 nodes:
   hosts:
-    ubuntu_24: 
-      name: test_machine
-      ansible_host: fe80::215:5dff:fe80:104%eth0
+    # ubuntu_24: 
+    #   name: test_machine
+    #   ansible_host: fe80::215:5dff:fe80:104%eth0
     ubuntu_22-1:
       name: jammy
       ansible_host: fe80::215:5dff:fe80:105%eth0

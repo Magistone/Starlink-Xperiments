@@ -3,18 +3,27 @@
   gather_facts: false
 
   tasks:
-  - name: Dump collections to JSON
+  - name: Get collection names
     community.mongodb.mongodb_shell:
       mongo_cmd: mongosh
       db: starlink
       eval: "db.runCommand('listCollections')"
     register: result
 
-  - name: dbg
-    ansible.builtin.debug:
-      msg: "{{item.name}}"
+  - name: Dump all data to JSON
+    become: false
+    ansible.builtin.shell:
+      cmd: "mongoexport --collection={{item.name|quote}} --db=starlink --out=dump/{{item.name + '.json' | quote}}"
+      chdir: starlinktool
     with_items: "{{result.transformed_output.cursor.firstBatch}}"
     when: item.type == 'timeseries'
 
-    #condition on item.type = timeseries
-    #extract using shell 
+  - name: Download JSON data
+    become: false
+    ansible.builtin.fetch:
+      dest: '{{playbook_dir}}/../collected_data/{{inventory_hostname}}/'
+      src: starlinktool/dump/{{item.name}}.json
+      flat: true
+    with_items: "{{result.transformed_output.cursor.firstBatch}}"
+    when: item.type == 'timeseries'
+    

@@ -2,8 +2,9 @@
   vars:
     module: ping
     period_seconds: 5
-    measurement_tags:
+    fixed_tags:
       machine: "{{inventory_hostname}}"
+    measurement_tags: "{{ fixed_tags | ansible.builtin.combine(tag_with | default(None))}}"
     runtime_config:
       targets:
         - '1.1.1.1'

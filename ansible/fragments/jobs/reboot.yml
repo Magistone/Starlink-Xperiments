@@ -1,3 +1,4 @@
 - import_tasks: base.yml
   vars:
+    module: reboot (dummy)
     path: reboot

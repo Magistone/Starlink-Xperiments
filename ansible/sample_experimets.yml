@@ -3,7 +3,15 @@
   hosts: nodes
   gather_facts: false
 
+  vars:
+    stop_time: "FRI, 10 JUN 2024 11:25:00 GMT"
+    tag_with:
+      test: Hi!
+
   tasks:
     - import_tasks: fragments/jobs/ip.yml
       vars:
-        stop_time: "FRI, 07 JUN 2024 10:45:00 GMT"
+        karel: VAT
+    - import_tasks: fragments/jobs/ping.yml
+    - import_tasks: fragments/jobs/space_weather.yml
+    - import_tasks: fragments/jobs/install.yml

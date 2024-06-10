@@ -1,11 +1,13 @@
 # Proto files
 dish.protoset
 grpc_targets.txt
+
 # Prototype code
 helper.py
 dump.py
 schema_dev.json
 DockerFile-sketch
+
 # Progress Tracking
 TODO
 
@@ -20,6 +22,7 @@ __pycache__
 image.tar
 nodes_stuff_needs_doing
 dump.json
+/collected_data
 
 # External dependencies
 /modules/grpc.py
