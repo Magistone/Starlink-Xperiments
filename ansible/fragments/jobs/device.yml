@@ -1,7 +1,7 @@
 - import_tasks: base.yml
   vars:
     module: device
-    period_seconds: 1
+    period: 1
     fixed_tags:
       machine: "{{inventory_hostname}}"
-    measurement_tags: "{{ fixed_tags | ansible.builtin.combine(tag_with | default(None))}}"
+    experiment_tags: "{{ fixed_tags | ansible.builtin.combine(tag_with | default(None))}}"

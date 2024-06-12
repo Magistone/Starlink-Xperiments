@@ -37,18 +37,19 @@ It has the following effects:
 > [!NOTE]
 > You will be asked twice for password - once the usual `sudo password` and second time for `BECOME password`. This is your `sudo password` as well,
 > ansible calls it `BECOME password` and is required as it manages the docker installation.
-2. Edit `ansible/inventory.yml` using your credentials and nodes. For details read (managing inventory)[#managing-inventory] bellow.
+2. Edit `ansible/inventory.yml` using your credentials and nodes. For details read [managing inventory](#managing-inventory) bellow.
 3. Run the ansible playbook called `setup_node.yml` against your configured inventory. This will install all dependencies and start the tool:
 `ansible-playbook ./ansible/setup-node.yml -i ./ansible/inventory.yml --ask-vault-pass`. If everything succeeds, your nodes are ready to receive experiment commands.
 
 
 ### Managing inventory
 All your experiment nodes should be listed in `ansible/inventory.yml`. In case you are familiar with ansible, you can skip this section.
-For everybody else you can either follow the simplified guide bellow or read the (official documentation)[https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#inventory-basics-formats-hosts-and-groups].
+For everybody else you can either follow the simplified guide bellow or read the [official documentation](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#inventory-basics-formats-hosts-and-groups).
 
 The simplified guide: 
+
 There are 2 parts to pay attention to:
-- The `vars` section applies to all hosts. The minimum config stored in `ansible/inventory.yml` stores there the SSH user, encrypted sudo password and which SSH key to use as all nodes use the same in this case. Example:
+The `vars` section applies to all hosts. The minimum config stored in `ansible/inventory.yml` stores there the SSH user, encrypted sudo password and which SSH key to use as all nodes use the same credentials in this case. 
 ```yml
 vars:
     ansible_ssh_private_key_file: ~/.ssh/starlinktool
@@ -61,17 +62,17 @@ vars:
           353130610a666263613964646564626561393764
 ```
 > [!NOTE]
-> The sudo password is encrypted using (vault)[https://docs.ansible.com/ansible/latest/vault_guide/vault_encrypting_content.html#encrypting-individual-variables-with-ansible-vault]. 
+> The sudo password is encrypted using [vault](https://docs.ansible.com/ansible/latest/vault_guide/vault_encrypting_content.html#encrypting-individual-variables-with-ansible-vault). 
 > This way different sudo passwords can be stored in the inventory and protected by a single master password. If
 > using encrypted variables like here, add `--ask-vault-pass` to be asked for the master password when running against the inventory.
 
-- The hosts section lists individual nodes. The `node_name` will show in ansible log and is used for directory name when collecting data. `ansible_host` is the IP or Fully Qualified Domain Name (FQDN) to connect to the node. Additional custom variables as you need (e.g. `name`). These can be accessed for tags when deploying experiments. The syntax is as follows:
+ The hosts section lists individual nodes. The `node_name` will show in ansible log and is used for directory name when collecting data. `ansible_host` is the IP or Fully Qualified Domain Name (FQDN) to connect to the node. Additional custom variables as you need (e.g. `name`). These can be accessed for tags when deploying experiments. The syntax is as follows:
 ```yml
 node_name:
     custom_var: value
     ansible_host: IP or FQDN
 ```
-If you need to add more specific directive (i.e. different user for one node) you can simply add that as ansible (overrides variables)[https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged]
+If you need to add more specific directive (i.e. different user for one node) you can simply add that as ansible [overrides variables](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged)
 ```yml
 node_name:
     custom_var: value
@@ -86,36 +87,43 @@ node_name:
 ### Variables
 When dealing with experiments, there are some variables that are up to you to use. The list of variables and conditions is listed bellow:
 
-Variables
 - module: `string`, required. Name of the module without `.py` extension (e.g. `ip` for `ip.py`),
-- start: `string`, optional. RFC7231 format (e.g. Sun, 06 Nov 1994 08:49:37 GMT)
-- stop: `string`, required if forever is not `true`. RFC7231 format (e.g. Sun, 06 Nov 1994 08:49:37 GMT)
+- start: `string`, optional. RFC7231 format (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`)
+- stop: `string`, required if forever is not `true`. RFC7231 format (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`)
 - period: `float`, required. Sampling period in seconds
 - forever: `boolean`, required. Defaults to `false`
 - setup: `dictionary`, optional. Module dependent setup configuration
 - config: `dictionary`, optional. Module dependent runtime configuration
 - tags: `dictionary`, optional. Extra tags stored in metadata for the given experiment
-- stow: `boolean`. Used by stow utility.
+- stow: `boolean`. Used by stow utility
 - modules: `list[str]`. Used by install utility
 
 ### Deploying experiments
-A sample playbook is provided in `ansible/sample_experiments.yml`. Use `ansible-playbook ./ansible/sample_experiments.yml -i ./ansible/inventory.yml` to try it out
+A sample playbook is provided in `ansible/sample_experiments.yml`.
+
+Use `ansible-playbook ./ansible/sample_experiments.yml -i ./ansible/inventory.yml` to try it out
 
 ### The playbook 
 You can easily create a set of experiments using playbooks. To do so, you can either use already included experiment modules or you can write your own (see bellow).
-As explained previously, please remember that ansible (overrides variables)[https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged]
+As explained previously, please remember that ansible [overrides variables](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged)
 and that it might affect the result.
 
-For included modules, all variables except for tags are overriden by ansible specification. If you want to control certain aspects of these modules in your playbook, comment or delete the relevant part in the fragment.
+For included modules, all variables except for tags are overriden by ansible specification. If you want to control certain aspects of these modules in your playbook, comment or delete the relevant part in the respective fragment stored in `ansible/fragments/jobs`.
+
+> [!HINT]
+> not all aspects are controlled by default
+
+> [!HINT]
+> You can use `dbg` boolean to print the configuration passed to the server without running the experiment
 
 Include experiments:
  - Make sure that the aspects you want to control from your playbook are not included in the fragment (tags excluded). See overriding variables.
  - The included modules support 'static' tags (fragment defined) and 'dynamic' tags (playbook defined). Ansible will merge them when both are desired. Use `tag_with` variable passed to the fragment to leverage this functionality. 
 
 Custom experiments:
- - You will want to write a module that does the custom thing. For that see (bellow)[#writing-your-own-modules]
+ - You will want to write a module that does the custom thing. For that see [bellow](#writing-your-own-modules)
  - To make deploying easier, a good idea is to make a fragment configuration that all included modules have. You can find them in `ansible/fragments/jobs` directory
- - Your modules might need dependencies that are not installed by default. If so, use the included (install module)[#install-(utility)] in your playbook (once is enough)
+ - Your modules might need dependencies that are not installed by default. If so, use the included [install module](#install-utility) in your playbook (once is enough)
  - To deploy the custom modules to all experiment nodes include `ansible/fragments/tasks/deploy_modules.yml` in your playbook
  - Run your custom experiment
 
@@ -124,6 +132,9 @@ Custom experiments:
 
 > [!HINT]
 > If you get code 500 check your stop time. The scheduler doesn't verify that it is in the future, it only verifies that the sub-process has not crashed within the first second
+
+> [!CAUTION]
+> use `experiment_tags` when defining tags for custom experiments in your playbooks (see included fragments). The variable name `tags` conflicts with ansible tags
 
 ### Collecting data from experiment nodes
 Run the `collect_measurements.yml` playbook against your nodes. A new directory `collected_data` will be created.
@@ -155,15 +166,15 @@ Collects traceroute against a list of targets.
 For each target, returns a `dict` where keys correspond to hop distance and values contain `address` and `rtt_ms` fields. Only single packet is sent per hop
 
 Module specific parameters:
-- `targets: list[str]`: List of targets against which to run traceroute. Each string can be any of the following types `IPv4`, `IPv6`, `FQDN`. Mixing is allowed
+- `targets: list[str]`: List of targets against which to run traceroute. Each string can be any of the following types: `IPv4`, `IPv6`, `FQDN`. Mixing is allowed
 
 ### Ping
 Collects ping against a list of targets
 
-For each target returns an object with `rtt_ms` property. This property is average of 3 packets sent with 5ms gaps. If the reply comes from a different host or the target is FQDN additionally contains `address` property specyfying the IP address
+For each target returns an object with `rtt_ms` property. This property is average of 3 packets sent with 5ms gaps. If the reply comes from a different host or the target is FQDN additionally contains `address` property specifying the IP address
 
 Module specific parameters:
-- `targets: list[str]`: List of targets agaisnt which to collect ping (rtt) data. Each string can be any of the following types `IPv4`, `IPv6`, `FQDN`. Mixing is allowed
+- `targets: list[str]`: List of targets agaisnt which to collect ping (rtt) data. Each string can be any of the following types: `IPv4`, `IPv6`, `FQDN`. Mixing is allowed
 
 ### Weather
 Collects weather data locally - precipitation and cloud coverage.
@@ -172,13 +183,13 @@ In case your region is not covered you will have to find a different provider an
 
 Module specific parameters:
 - `user_agent: str`: Must conform to MET Weather API requirements
-- Starlink dish configuration: Location enabled. The script queries the dish for GPS coordinates during the setup period. After setup, location can be disabled.
+- Starlink dish configuration: Location enabled. The script queries the dish for GPS coordinates during the setup call. After setup, location can be disabled.
 
 > [!CAUTION]
 > MET API has rate limits and requires a valid `user_agent`. Not following their guidelines can result in the inability to collect data
 
 ### Space Weather
-Collects space weather data on [NOAA Scale](https://www.spaceweather.gov/noaa-scales-explanation)
+Collects space weather data on [NOAA Scale](https://www.spaceweather.gov/noaa-scales-explanation).
 Underlying metrics (e.g. proton flux, k-index) are historically available on [spaceweather.gov](https://spaceweather.gov)
 
 Module specific parameters:
@@ -194,7 +205,7 @@ Parameters:
 Reboots starlink dish.
 
 > [!CAUTION]
-> If using IPv6 addresses for connecting, this may cause unreachability
+> If using IPv6 addresses for addressing experiment nodes, this may cause unreachability
 
 ### Stow (utility)
 Commands the starlink dish to enter or exit the stow state.
@@ -211,7 +222,9 @@ The process to creating your own module if pretty straightforward:
 ### Specification
 You need to include 2 methods: `setup(conf_s)` and `collect(conf_c)`
 
-The `setup` method is designed to run one-time preparition that depends on some external factors. A good example might be getting location from the dish for weather collection, or any expensive calls that do not need to be called with each data collection. Should you need to pass it some parameters via a playbook, they will be part of the `conf_s` dictionary
+`conf_s` contains data passed through the `setup` variable and `conf_c` contains data passed through the `config` variable as described in the [variables](#variables) section
+
+The `setup` method is designed to run one-time preparition that depends on some external factors. A good example might be getting location from the dish for weather collection, or any expensive calls that do not need to be called with each data collection. Should you need to pass it some parameters via a playbook, they will be part of the `conf_s` dictionary.
 Returns `void`.
 
 The `collect` method is called every collection cycle exactly once. Parameters that are needed for every collection should be passed through the `conf_c` dictionary.
@@ -219,9 +232,9 @@ This method returns either `dict` or `list[dict]` with collected data. Should co
 
 ### Testing
 For your convenience there is `pytest` testing framework already included. Create a test file in the `tests` directory that has tests against your module.
-You can test the module end-to-end by instancing `Scheduler` with the `schedule` method. In that case, pass it the `dbg=True` parameter, it will disable the database writing and print results to `stdout` instead.
+You can test the module end-to-end by instancing `Scheduler` with the `schedule` method. In that case, pass it the `dbg=True` parameter, it will disable the database writing and prints results to `stdout` instead.
 
-``config`` is a dictionary that contains variables listed (above)[#variables]
+``config`` is a dictionary that contains variables listed [above](#variables)  
 
 To run tests there is a simple shell script included called `test.sh`
 

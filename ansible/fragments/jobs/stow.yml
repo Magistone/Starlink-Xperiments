@@ -2,4 +2,4 @@
   vars:
     module: stow (dummy)
     path: stow
-    stow_the_dish: true
+    stow: true
