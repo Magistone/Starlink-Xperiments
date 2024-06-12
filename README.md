@@ -80,7 +80,7 @@ node_name:
     ansible_user: different_user
 ```
 
-> [!HINT]
+> [!TIP]
 > IPv6 addresses are globally adressable
 
 ## Experiments - How to
@@ -110,10 +110,10 @@ and that it might affect the result.
 
 For included modules, all variables except for tags are overriden by ansible specification. If you want to control certain aspects of these modules in your playbook, comment or delete the relevant part in the respective fragment stored in `ansible/fragments/jobs`.
 
-> [!HINT]
+> [!TIP]
 > not all aspects are controlled by default
 
-> [!HINT]
+> [!TIP]
 > You can use `dbg` boolean to print the configuration passed to the server without running the experiment
 
 Include experiments:
@@ -130,7 +130,7 @@ Custom experiments:
 > [!NOTE]
 > To include `x` means using the directive `import_tasks: x` in the playbook.
 
-> [!HINT]
+> [!TIP]
 > If you get code 500 check your stop time. The scheduler doesn't verify that it is in the future, it only verifies that the sub-process has not crashed within the first second
 
 > [!CAUTION]
