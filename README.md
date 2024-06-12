@@ -110,6 +110,13 @@ and that it might affect the result.
 
 For included modules, all variables except for tags are overriden by ansible specification. If you want to control certain aspects of these modules in your playbook, comment or delete the relevant part in the respective fragment stored in `ansible/fragments/jobs`.
 
+The structure looks as follows: 
+```mermaid
+graph TD;
+    base.yml<-- extends --ip.yml & ping.yml & ...
+    ip.yml & ping.yml & ... <-- uses --sample_experiments.yml
+```
+
 > [!NOTE]
 > Not all aspects are controlled by default
 
