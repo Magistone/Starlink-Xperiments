@@ -113,8 +113,8 @@ For included modules, all variables except for tags are overriden by ansible spe
 The structure looks as follows: 
 ```mermaid
 graph TD;
-    ip.yml & ping.yml & other fragments -- specify --- base.yml
-    sample_experiments.yml -- uses --- ip.yml & ping.yml & other fragments
+    ip.yml & ping.yml & |other fragments| -- specify --- base.yml
+    sample_experiments.yml -- uses --- ip.yml & ping.yml & |other fragments|
 ```
 
 > [!NOTE]
