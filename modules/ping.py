@@ -4,6 +4,7 @@ from collections import namedtuple
 
 pingResult = namedtuple('pingResult', ['target', 'ping'])
 
+# Leverage asyncio for I/O to reduce time required
 async def collect_ping_against_target(target: str):
     data = dict()
     try:
@@ -15,15 +16,18 @@ async def collect_ping_against_target(target: str):
     except icmplib.NameLookupError:
         return pingResult(target, None)
 
+# Method for setup (spec requirement)
 def setup(setup: dict | None):
     if isinstance(setup, dict):
         print(setup.get('test'))
     pass
 
+#Method for collection (spec requirement)
 def collect(config):
     data = list()
     results:list[pingResult] = asyncio.run(run(config['targets']))
 
+    #Inject tag 'target' with its value being the address pinged
     for result in results:
         if result.ping:
             data_point = result.ping
@@ -33,6 +37,7 @@ def collect(config):
 
     return data
 
+## Other method as needed, async runner
 async def run(targets):
     results = list()
     tasks = list()

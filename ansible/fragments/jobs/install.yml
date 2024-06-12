@@ -2,5 +2,3 @@
   vars:
     module: install (dummy)
     path: install
-    modules_to_install:
-      - numpy
