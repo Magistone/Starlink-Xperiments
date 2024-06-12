@@ -130,11 +130,12 @@ Custom experiments:
 > [!NOTE]
 > To include `x` means using the directive `import_tasks: x` in the playbook.
 
+> [!IMPORTANT]
+> use `experiment_tags` when defining tags for custom experiments in your playbooks (see included fragments). The variable name `tags` conflicts with ansible tags
+
 > [!TIP]
 > If you get code 500 check your stop time. The scheduler doesn't verify that it is in the future, it only verifies that the sub-process has not crashed within the first second
 
-> [!IMPORTANT]
-> use `experiment_tags` when defining tags for custom experiments in your playbooks (see included fragments). The variable name `tags` conflicts with ansible tags
 
 ### Collecting data from experiment nodes
 Run the `collect_measurements.yml` playbook against your nodes. A new directory `collected_data` will be created.
@@ -234,16 +235,16 @@ This method returns either `dict` or `list[dict]` with collected data. Should co
 For your convenience there is `pytest` testing framework already included. Create a test file in the `tests` directory that has tests against your module.
 You can test the module end-to-end by instancing `Scheduler` with the `schedule` method. In that case, pass it the `dbg=True` parameter, it will disable the database writing and prints results to `stdout` instead.
 
-``config`` is a dictionary that contains variables listed [above](#variables)  
-
-To run tests there is a simple shell script included called `test.sh`
-
 ```python
 import scheduler
 
 def test(capsys):
     scheduler.schedule(config: dictionary, dbg=True)
 ```
+
+``config`` is a dictionary that contains variables listed [above](#variables)  
+
+To run tests there is a simple shell script included called `test.sh`
 
 > [!NOTE]
 > The scheduler takes care of injecting timestamp into the collected data object
