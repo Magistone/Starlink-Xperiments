@@ -34,7 +34,7 @@ It has the following effects:
     - Installs Docker
     - Generates SSH key
     - Creates docker image for nodes
-> [!NOTE]
+> [!IMPORTANT]
 > You will be asked twice for password - once the usual `sudo password` and second time for `BECOME password`. This is your `sudo password` as well,
 > ansible calls it `BECOME password` and is required as it manages the docker installation.
 2. Edit `ansible/inventory.yml` using your credentials and nodes. For details read [managing inventory](#managing-inventory) bellow.
@@ -110,13 +110,13 @@ and that it might affect the result.
 
 For included modules, all variables except for tags are overriden by ansible specification. If you want to control certain aspects of these modules in your playbook, comment or delete the relevant part in the respective fragment stored in `ansible/fragments/jobs`.
 
-> [!TIP]
-> not all aspects are controlled by default
+> [!NOTE]
+> Not all aspects are controlled by default
 
 > [!TIP]
 > You can use `dbg` boolean to print the configuration passed to the server without running the experiment
 
-Include experiments:
+Included experiments:
  - Make sure that the aspects you want to control from your playbook are not included in the fragment (tags excluded). See overriding variables.
  - The included modules support 'static' tags (fragment defined) and 'dynamic' tags (playbook defined). Ansible will merge them when both are desired. Use `tag_with` variable passed to the fragment to leverage this functionality. 
 
@@ -133,7 +133,7 @@ Custom experiments:
 > [!TIP]
 > If you get code 500 check your stop time. The scheduler doesn't verify that it is in the future, it only verifies that the sub-process has not crashed within the first second
 
-> [!CAUTION]
+> [!IMPORTANT]
 > use `experiment_tags` when defining tags for custom experiments in your playbooks (see included fragments). The variable name `tags` conflicts with ansible tags
 
 ### Collecting data from experiment nodes
@@ -142,7 +142,7 @@ Run the `collect_measurements.yml` playbook against your nodes. A new directory 
 Example: `ansible-playbook ./ansible/collect_measurements.yml -i ./ansible/inventory.yml`
 
 > [!NOTE]
-> This will collect all data stored on each of the nodes, not just 1 experiment
+> This will collect all data stored on each of the nodes, not just a single experiment
 
 ## Included modules
 All parameters are required unless stated otherwise
