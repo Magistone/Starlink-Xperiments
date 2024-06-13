@@ -10,6 +10,7 @@ Orchestrator:
 
 Experiment nodes: 
  - Orchestrator can establish SSH connection to it
+ - CPU supporting [AVX instruction](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions) (supported by most modern CPUs)
  - Recommended: Ubuntu 22 LTS
 
 Although Ubuntu 24 LTS was already available at the time of writing, `Python 3.12` introduced breaking changes that broke
@@ -18,6 +19,9 @@ you will likely need to edit some part of the automation yourself. Running Ubunt
 scripts to fail.
 
 ## Setup
+
+Before starting, clone this repository on the machine you will want to use as the orchestrator.
+
 ### Manual Part
 Before doing the manual part of the setup, please complete step `#1` of the automatic part.
 To prepare everything for running the tool, do the following for every machine that is an `experiment node`:
@@ -149,6 +153,23 @@ Run the `collect_measurements.yml` playbook against your nodes. A new directory 
 
 Example: `ansible-playbook ./ansible/collect_measurements.yml -i ./ansible/inventory.yml`
 
+Data format for one entry:
+```json
+{
+    "metadata": {
+        "job_name": "module_name",   // Written by scheduler
+        "tag_name": "tag_value"        
+    },                                  
+    "timestamp": "mongoDB_ISO_date", // Written by scheduler 
+    "_id": "mongoDB_Object_id",      // Created by DB driver
+    "key": "value",
+    "another_key": "another_value",
+    "different_key": {              // If your dictionary contains another dictionary
+        "dictionary_key": "dictionary_value"
+    }
+}
+```
+
 > [!NOTE]
 > This will collect all data stored on each of the nodes, not just a single experiment
 
@@ -237,6 +258,8 @@ Returns `void`.
 
 The `collect` method is called every collection cycle exactly once. Parameters that are needed for every collection should be passed through the `conf_c` dictionary.
 This method returns either `dict` or `list[dict]` with collected data. Should collecting fail, returning `None` is fine. The list of dictionaries is mostly used when doing the same job against several targets, see `ping` for example. The data is stored in the same key-value format.
+
+If either `collect` or `setup` throws exception, the subprocess for the measurement will crash. Does not affect the main runner.
 
 ### Testing
 For your convenience there is `pytest` testing framework already included. Create a test file in the `tests` directory that has tests against your module.

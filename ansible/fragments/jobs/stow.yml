@@ -2,4 +2,3 @@
   vars:
     module: stow (dummy)
     path: stow
-    stow: true
