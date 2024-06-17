@@ -7,7 +7,7 @@ wget https://raw.githubusercontent.com/sparky8512/starlink-grpc-tools/main/starl
 ssh-keygen -f ~/.ssh/starlinktool -t ed25519 -N ""
 
 #Install orchestrator
-pip install -r requirements_orchestrator.txt 
+sudo apt install -y ansible 
 
 #We need docker locally...
 ansible-playbook ./ansible/orchestrator.yml -i localhost, --ask-become-pass
