@@ -3,7 +3,8 @@ This toolset is designed to be used as a platform to easily collect metrics abou
 Even though it was originally designed for starlink only, it can be used for other purposes.
 Developed as a Bachelor Thesis At Saarland university under the supervision of Dependable Systems Chair.
 
-Blah Blah something about the software
+The framework is written in python and uses ansible to automate tasks such as deployment and running experiments on nodes where the framework is running.
+Each experiment is contained within its own module that can be easily changed/added/removed. The architecture of the framework does not require a chosen control node to be online at all times, instead, the control node pushes tasks to experiment nodes that are then run independently.
 
 ## Requirements
 Control node: 
@@ -82,9 +83,9 @@ It has the following effects:
 
 4. Run the ansible playbook called `setup_node.yml` against your configured inventory. This will install all dependencies and start the tool:
 
-`ansible-playbook ./ansible/setup-node.yml -i ./ansible/inventory.yml --ask-vault-pass`.
+    `ansible-playbook ./ansible/setup-node.yml -i ./ansible/inventory.yml --ask-vault-pass`.
 
- If everything succeeds, your nodes are ready to receive experiment commands.
+    If everything succeeds, your nodes are ready to receive experiment commands.
 
 > [!NOTE]
 > You have now completed the setup and the tool is running on your experiment nodes.
@@ -96,7 +97,7 @@ When dealing with experiments, there are some variables that are up to you to us
 
 - module: `string`, required. Name of the experiment module without `.py` extension (e.g. `ip` for `ip.py`),
 - start: `string`, optional. Start time in RFC7231 format (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`)
-- stop: `string`, required if forever is not `true`. Stop time RFC7231 format (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`)
+- stop: `string`, required if forever is not `true`. Stop time in RFC7231 format (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`)
 - period: `float`, required. Sampling period in seconds
 - forever: `boolean`, required. Defaults to `false`
 - setup: `dictionary`, optional. Experiment dependent setup configuration
@@ -108,7 +109,9 @@ When dealing with experiments, there are some variables that are up to you to us
 ### Deploying experiments
 A sample playbook is provided in `ansible/sample_experiments.yml`.
 
-Edit `stop` in to be in the future and use `ansible-playbook ./ansible/sample_experiments.yml -i ./ansible/inventory.yml --ask-vault-pass` to try it out
+Edit `stop` to be in the future and then use the following command to try it out:
+
+`ansible-playbook ./ansible/sample_experiments.yml -i ./ansible/inventory.yml --ask-vault-pass`
 
 > [!TIP]
 > You can use `dbg` boolean to print the configuration passed to the server without running the experiment
@@ -128,9 +131,9 @@ Included experiments:
  - The included experiment modules support 'static' tags (fragment defined) and 'dynamic' tags (playbook defined). Ansible will merge them when both are desired. Use `tag_with` variable passed to the fragment to leverage this functionality. 
 
 Custom experiments:
- - You will want to write an experiment module that does the custom thing. For that see [bellow](#writing-your-own-experiment-modules)
+ - You will want to write an experiment module that does the custom thing. For that see [writing your own modules](#writing-your-own-experiment-modules)
  - To make deploying easier, a good idea is to make a fragment configuration that all included experiment modules have. You can find them in `ansible/fragments/jobs` directory
- - Your experiment modules might need dependencies that are not installed by default. If so, use the included [install module](#install-utility) in your playbook
+ - Your experiment modules might need dependencies that are not installed by default. If so, use the included [install utility](#install-utility) in your playbook
  - To deploy the custom experiment modules to all experiment nodes include `ansible/fragments/tasks/deploy_modules.yml` in your playbook
  - Run your custom experiment
 
@@ -172,7 +175,7 @@ Data format for a single entry:
 ## Included experiment modules
 All parameters are required unless stated otherwise
 
-> [!NOTE]
+> [!IMPORTANT]
 > For all non-utility modules, the specific parameters belong to runtime configuration. For utility modules, they have their own field.
 
 ### Device
@@ -199,7 +202,7 @@ Module specific parameters:
 ### Ping
 Collects ping against a list of targets
 
-For each target returns an object with `rtt_ms` property. This property is average of 3 packets sent with 5ms gaps. If the reply comes from a different host or the target is FQDN additionally contains `address` property specifying the IP address
+For each target returns an object with `rtt_ms` property. If the reply comes from a different host or the target is FQDN additionally contains `address` property specifying the IP address
 
 Module specific parameters:
 - `targets: list[str]`: List of targets agaisnt which to collect ping (rtt) data. Each string can be any of the following types: `IPv4`, `IPv6`, `FQDN`. Mixing is allowed
