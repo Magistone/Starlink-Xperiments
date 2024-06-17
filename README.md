@@ -83,7 +83,7 @@ It has the following effects:
 
 4. Run the ansible playbook called `setup_node.yml` against your configured inventory. This will install all dependencies and start the tool:
 
-    `ansible-playbook ./ansible/setup-node.yml -i ./ansible/inventory.yml --ask-vault-pass`.
+    `ansible-playbook ./ansible/setup-node.yml -i ./ansible/inventory.yml`.
 
     If everything succeeds, your nodes are ready to receive experiment commands.
 
@@ -111,7 +111,7 @@ A sample playbook is provided in `ansible/sample_experiments.yml`.
 
 Edit `stop` to be in the future and then use the following command to try it out:
 
-`ansible-playbook ./ansible/sample_experiments.yml -i ./ansible/inventory.yml --ask-vault-pass`
+`ansible-playbook ./ansible/sample_experiments.yml -i ./ansible/inventory.yml`
 
 > [!TIP]
 > You can use `dbg` boolean to print the configuration passed to the server without running the experiment
@@ -150,7 +150,7 @@ Custom experiments:
 ### Collecting data from experiment nodes
 Run the `collect_measurements.yml` playbook against your nodes. A new directory `collected_data` will be created.
 
-Example: `ansible-playbook ./ansible/collect_measurements.yml -i ./ansible/inventory.yml --ask-vault-pass`
+Example: `ansible-playbook ./ansible/collect_measurements.yml -i ./ansible/inventory.yml`
 
 Data format for a single entry:
 ```json
