@@ -45,35 +45,36 @@ It has the following effects:
 
     There are 2 parts to pay attention to:
 
-     The hosts section lists individual nodes. The `node_name` will show in ansible log and is used for directory name when collecting data. `ansible_host` is the IP or Fully Qualified Domain Name (FQDN) to connect to the node. Additional custom variables as you need (e.g. `name`). These can be accessed for tags when deploying experiments. The syntax is as follows:
-    ```yml
-    node_name:
-        custom_var: value
-        ansible_host: IP or FQDN
-    ```
-    If you need to add more specific directive (i.e. different user or ssh key for one node) you can simply add that as ansible [overrides variables](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged)
-    ```yml
-    node_name:
-        custom_var: value
-        ansible_host: IP or FQDN
-        ansible_user: different_user
-        ansible_ssh_private_key_file: ~/.ssh/different_private_key
-    ```
+    - The hosts section lists individual nodes. The `node_name` will show in ansible log and is used for directory name when collecting data. `ansible_host` is the IP or Fully Qualified Domain Name (FQDN) to connect to the node. Additional custom variables as you need (e.g. `name`). These can be accessed for tags when deploying experiments. The syntax is as follows:
+        ```yml
+        node_name:
+            custom_var: value
+            ansible_host: IP or FQDN
+        ```
+        If you need to add more specific directive (i.e. different user or ssh key for one node) you can simply add that as ansible [overrides variables](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged)
+        ```yml
+        node_name:
+            custom_var: value
+            ansible_host: IP or FQDN
+            ansible_user: different_user
+            ansible_ssh_private_key_file: ~/.ssh/different_private_key
+        ```
+
+    - The `vars` section applies to all hosts. The minimum config stored in `ansible/inventory.yml` stores there the SSH user, encrypted sudo password and which SSH key that are used by default if the configuration for a particular node does not specify it. 
+        ```yml
+        vars:
+            ansible_ssh_private_key_file: ~/.ssh/starlinktool
+            ansible_user: some_user
+            ansible_become_password: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                3233333538333634623161633032343731393436
+                3137396232393163333966353236346536643738
+                3338633464633161333338373164636333383566
+                353130610a666263613964646564626561393764
+        ```
 > [!TIP]
 > IPv6 addresses are globally adressable
 
-    The `vars` section applies to all hosts. The minimum config stored in `ansible/inventory.yml` stores there the SSH user, encrypted sudo password and which SSH key that are used by default if the configuration for a particular node does not specify it. 
-    ```yml
-    vars:
-        ansible_ssh_private_key_file: ~/.ssh/starlinktool
-        ansible_user: some_user
-        ansible_become_password: !vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            3233333538333634623161633032343731393436
-            3137396232393163333966353236346536643738
-            3338633464633161333338373164636333383566
-            353130610a666263613964646564626561393764
-    ```
 > [!NOTE]
 > The sudo password is encrypted using [vault](https://docs.ansible.com/ansible/latest/vault_guide/vault_encrypting_content.html#encrypting-individual-variables-with-ansible-vault). 
 > This way different sudo passwords can be stored in the inventory and protected by a single master password. If
