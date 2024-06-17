@@ -34,12 +34,13 @@ It has the following effects:
 > ansible calls it `BECOME password` and is required as it manages the docker installation.
 
 2. To prepare everything for running the tool, do the following for every machine that is an `experiment node`:
-    - Create a user (or use existing)
-    - Use `ssh-copy-id ~/.ssh/starlinktool.pub [NODE]` to use the generated key. You can choose to use a different ssh key or even different ssh key for every node.
+    - Create a user (or use existing) on the experiment node
+    - Use `ssh-copy-id -i ~/.ssh/starlinktool.pub [NODE]` from control node to use the generated key. You can choose to use a different ssh key or even different ssh key for every node.
     - Make sure the user has sudo privilleges
 
 3. On control node edit `ansible/inventory.yml` using your nodes addresses and credentials.
     In case you are familiar with ansible, you can skip to step 4.
+
     All your experiment nodes should be listed in `ansible/inventory.yml`. In case something is unclear, please read the [official documentation](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#inventory-basics-formats-hosts-and-groups).
 
     There are 2 parts to pay attention to:
@@ -58,8 +59,8 @@ It has the following effects:
         ansible_user: different_user
         ansible_ssh_private_key_file: ~/.ssh/different_private_key
     ```
-    > [!TIP]
-    > IPv6 addresses are globally adressable
+> [!TIP]
+> IPv6 addresses are globally adressable
 
     The `vars` section applies to all hosts. The minimum config stored in `ansible/inventory.yml` stores there the SSH user, encrypted sudo password and which SSH key that are used by default if the configuration for a particular node does not specify it. 
     ```yml
@@ -73,13 +74,16 @@ It has the following effects:
             3338633464633161333338373164636333383566
             353130610a666263613964646564626561393764
     ```
-    > [!NOTE]
-    > The sudo password is encrypted using [vault](https://docs.ansible.com/ansible/latest/vault_guide/vault_encrypting_content.html#encrypting-individual-variables-with-ansible-vault). 
-    > This way different sudo passwords can be stored in the inventory and protected by a single master password. If
-    > using encrypted variables like here, add `--ask-vault-pass` to be asked for the master password when running against the inventory.
+> [!NOTE]
+> The sudo password is encrypted using [vault](https://docs.ansible.com/ansible/latest/vault_guide/vault_encrypting_content.html#encrypting-individual-variables-with-ansible-vault). 
+> This way different sudo passwords can be stored in the inventory and protected by a single master password. If
+> using encrypted variables like here, add `--ask-vault-pass` to be asked for the master password when running against the inventory.
 
 4. Run the ansible playbook called `setup_node.yml` against your configured inventory. This will install all dependencies and start the tool:
-`ansible-playbook ./ansible/setup-node.yml -i ./ansible/inventory.yml --ask-vault-pass`. If everything succeeds, your nodes are ready to receive experiment commands.
+
+`ansible-playbook ./ansible/setup-node.yml -i ./ansible/inventory.yml --ask-vault-pass`.
+
+ If everything succeeds, your nodes are ready to receive experiment commands.
 
 > [!NOTE]
 > You have now completed the setup and the tool is running on your experiment nodes.
