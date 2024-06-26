@@ -20,8 +20,8 @@ def write_data(data: dict | list, collection: str):
 def check_or_create_collection(name: str):
     collection_list = db.list_collection_names()
     if name not in collection_list:
-        db.create_collection(name, timeseries={
-            'timeField':"timestamp",
+        db.create_collection(name, timeseries={ #remove timeseries={...} if running with mongodb <=6.0
+            'timeField':"timestamp",            #i.e. this should be db.create_collection(name)
             'metaField':"metadata",
             'bucketMaxSpanSeconds':3600,
             'bucketRoundingSeconds':3600

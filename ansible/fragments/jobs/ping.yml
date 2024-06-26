@@ -1,7 +1,7 @@
 - import_tasks: base.yml
   vars:
     module: ping
-    period: 5
+    #period: 0.5
     fixed_tags:
       machine: "{{inventory_hostname}}"
     experiment_tags: "{{ fixed_tags | ansible.builtin.combine(tag_with | default(None))}}"
@@ -9,5 +9,4 @@
       targets:
         - '1.1.1.1'
         - '8.8.8.8'
-        - 'csgate.cs.uni-sb.de'
         - '2606:4700:4700::1111'

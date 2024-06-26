@@ -4,30 +4,39 @@
   gather_facts: false
 
   vars:
-    stop: "FRI, 13 JUN 2024 11:40:00 GMT"
+    stop: "FRI, 01 AUG 2024 00:00:01 GMT"
     # Set to true to print config for each experiment. False or undefined to run experiments
     dbg: false
     # Dynamic tag that will also be present in the resulting metadata for all experiments
     # alongside static tags defined in the respective fragments
     tag_with:
-      test: Hi!
+      measurement: 'data_v1'
 
   tasks:
     - import_tasks: fragments/jobs/ip.yml
       vars:
-        #only available for the ip experiment
-        karel: VAT
-        tag_with:
-          another_test: Overriden original
+        period: 15
     - import_tasks: fragments/jobs/ping.yml
+      vars:
+        period: 0.5
     - import_tasks: fragments/jobs/space_weather.yml
+      vars:
+        period: 60
     - import_tasks: fragments/jobs/device.yml
+      vars:
+        period: 0.5
+    - import_tasks: fragments/jobs/traceroute.yml
+      vars:
+        period: 15
+    - import_tasks: fragments/jobs/weather.yml
+      vars:
+        period: 1800
     # - import_tasks: fragments/jobs/reboot.yml
 
     # - import_tasks: fragments/jobs/stow.yml
     #   vars:
     #     stow: false
-    - import_tasks: fragments/jobs/install.yml
-      vars:
-        modules:
-          - numpy
+    # - import_tasks: fragments/jobs/install.yml
+    #   vars:
+    #     modules:
+    #       - numpy

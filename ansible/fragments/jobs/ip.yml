@@ -1,7 +1,7 @@
 - import_tasks: base.yml
   vars:
     module: ip
-    period: 15
+    #period: 15
     fixed_tags: 
       machine: "{{inventory_hostname}}"
     experiment_tags: "{{ fixed_tags | ansible.builtin.combine(tag_with | default(None))}}"

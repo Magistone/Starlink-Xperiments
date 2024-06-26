@@ -93,7 +93,7 @@ It has the following effects:
 
 ## Experiments - How to
 ### Variables
-When dealing with experiments, there are some variables that are up to you to use. The list of variables and conditions is listed bellow. The types are python/yaml types:
+When dealing with experiments, there are some variables that are up to you to use. The list of variables and conditions is listed below. The types are python/yaml types:
 
 - module: `string`, required. Name of the experiment module without `.py` extension (e.g. `ip` for `ip.py`),
 - start: `string`, optional. Start time in RFC7231 format (e.g. `Sun, 06 Nov 1994 08:49:37 GMT`)
@@ -117,7 +117,7 @@ Edit `stop` to be in the future and then use the following command to try it out
 > You can use `dbg` boolean to print the configuration passed to the server without running the experiment
 
 ### The playbook 
-You can easily create a set of experiments using playbooks. To do so, you can either use already included experiment modules or you can write your own (see bellow).
+You can easily create a set of experiments using playbooks. To do so, you can either use already included experiment modules or you can write your own (see below).
 As explained previously, please remember that ansible [overrides variables](https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html#how-variables-are-merged)
 and that it might affect the result.
 
@@ -246,7 +246,7 @@ Parameters:
 
 
 ## Writing your own experiment modules
-If you want to collect different metrics that are not included, read bellow to find out how to extend the functionality.
+If you want to collect different metrics that are not included, read below to find out how to extend the functionality.
 
 ### Specification
 You need to include 2 methods: `setup(conf_s)` and `collect(conf_c)`
@@ -285,5 +285,22 @@ To run tests there is a simple shell script included called `test.sh`
 
 ## FAQ
 
- The automation script fails on "Start docker compose"
+The automation script fails on "Start docker compose"
 > If the CPU is x86_64 make sure it supports AVX instruction
+> In case most don't have AVX instruction, read the question below this one
+
+Most or all experiment nodes don't have AVX instruction, can I not use this?
+> Remember that old mongoDB version is EOL, you're doing this at your own risk. Containers are configured to only expose port on local interface (`127.0.0.1`). 
+> If this acceptable you can do that with a few tweaks:
+> 1. in `docker-compose` change mongodb image tag from `7.0.11-ubi8` to `4.4.21-ubi8`
+> 2. in `db.py` remove the `timeseries` named argument for the database
+> 3. in `collect_measurements` playbook change `item.type == 'timeseries'` to `item.type == 'collection'`
+> 4. rebuild the docker image, export it and then re-run `setup_node` playbook to deploy those changes
+> 5. the list is non-exhaustive as it was not fully tested with such old HW. You might run into other issues
+
+I changed the files that are part of the runner image, how do I redeploy it?
+> Build and export the image from docker. Then include `deploy_image` fragment in your playbook.
+> This will restart all the runners with the new image
+> 
+> WARNING: running experiments are in-memory only. You need to start them yourself again subsequently in the playbook
+
