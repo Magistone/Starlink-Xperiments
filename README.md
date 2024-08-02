@@ -1,10 +1,16 @@
-# Starlink toolset for measurements
-This toolset is designed to be used as a platform to easily collect metrics about starlink and its network performance.
-Even though it was originally designed for starlink only, it can be used for other purposes.
-Developed as a Bachelor Thesis At Saarland university under the supervision of Dependable Systems Chair.
+# Starlink framework for measurements
+This framework is designed to be used as a platform to easily collect metrics about starlink and its network performance.
+Even though it was originally designed for starlink only, it can be used for other purposes as well.
+Developed as a Bachelor Thesis at Saarland university under the supervision of Dependable Systems Chair.
+
+The framework utilizes two containers for to achieve the functionality - a database and a "runner" container. The runner container is responsible for the collection of data while the DB container is responsible for persistance of the data. A large part of the setup process is automated which reduces the number of steps needed to get running. 
+Throughout the documentation you will come a lot across those 3 terms:
+- `node`: A machine that collects data
+- `control node`: A machine from which automation scripts are run. Controls the operation of nodes
+- `experiment`: A configuration that is passed to nodes. The nodes then start data collection based on this configuration
 
 The framework is written in python and uses ansible to automate tasks such as deployment and running experiments on nodes where the framework is running.
-Each experiment is contained within its own module that can be easily changed/added/removed. The architecture of the framework does not require a chosen control node to be online at all times, instead, the control node pushes tasks to experiment nodes that are then run independently.
+Each experiment is contained within its own module that can be easily changed/added or removed. The architecture of the framework does not require a chosen control node to be online at all times, instead, the control node pushes tasks to experiment nodes that are then run independently.
 
 ## Requirements
 Control node: 
@@ -78,7 +84,7 @@ It has the following effects:
 
 > [!NOTE]
 > The sudo password is encrypted using [vault](https://docs.ansible.com/ansible/latest/vault_guide/vault_encrypting_content.html#encrypting-individual-variables-with-ansible-vault). 
-> This way different sudo passwords can be stored in the inventory and protected by a single master password. If
+> This way different sudo passwords can be stored in the inventory and be protected by a single master password. If
 > using encrypted variables like here, add `--ask-vault-pass` to be asked for the master password when running against the inventory.
 
 4. Run the ansible playbook called `setup_node.yml` against your configured inventory. This will install all dependencies and start the tool:
@@ -171,6 +177,18 @@ Data format for a single entry:
 
 > [!NOTE]
 > This will collect all data stored on each of the nodes, not just a single experiment
+
+### JSON to CSV conversion
+In the directory `translators` the repository includes a small script written in Rust that can translate collected JSON data to CSV. Edit the respective functions to choose which data are included. The CSV file has the same name and is saved in the same directory as the JSON.
+
+parameters:
+ - first parameter is path to the JSON file
+ - the second parameter indicates which parser to invoke. For list of available values see match statement in `main.rs` on line 38
+
+Example: `cd translators && cargo run --release /path/to/file.json file_type`
+
+> [!CAUTION]
+> Not all fields from JSON are dumped into CSV
 
 ## Included experiment modules
 All parameters are required unless stated otherwise

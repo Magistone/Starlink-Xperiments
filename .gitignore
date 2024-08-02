@@ -31,3 +31,6 @@ dump.json
 #Ansible dev
 /ansible/basic_playbook.yml
 /ansible/a_password_file
+
+#Build rust
+translators/target
