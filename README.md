@@ -179,7 +179,7 @@ Data format for a single entry:
 > This will collect all data stored on each of the nodes, not just a single experiment
 
 ### JSON to CSV conversion
-In the directory `translators` the repository includes a small script written in Rust that can translate collected JSON data to CSV. Edit the respective functions to choose which data are included. The CSV file has the same name and is saved in the same directory as the JSON.
+In the directory `translators` the repository includes a small script written in Rust that can translate collected JSON data to CSV. Edit the respective functions to choose which data are included (not all by default). The CSV file has the same name and is saved in the same directory as the JSON.
 
 parameters:
  - first parameter is path to the JSON file
@@ -188,7 +188,7 @@ parameters:
 Example: `cd translators && cargo run --release /path/to/file.json file_type`
 
 > [!CAUTION]
-> Not all fields from JSON are dumped into CSV
+> Rust is not installed on the control node through automation scripts
 
 ## Included experiment modules
 All parameters are required unless stated otherwise

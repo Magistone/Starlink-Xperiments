@@ -24,6 +24,9 @@ image-slxp.tar
 nodes_stuff_needs_doing
 dump.json
 /collected_data
+#/collected_data/**/*.csv
+/analysis/*
+#!/analysis/*.py
 
 # External dependencies
 /modules/grpc.py
