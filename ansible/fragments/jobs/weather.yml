@@ -6,4 +6,4 @@
       machine: "{{inventory_hostname}}"
     experiment_tags: "{{ fixed_tags | ansible.builtin.combine(tag_with | default(None))}}"
     config:
-      user_agent: "starlinktool/v1 vopr00001@stud.uni-saarland.de"
+      user_agent: "Java invalid.com"
