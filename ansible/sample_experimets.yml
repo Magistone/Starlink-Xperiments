@@ -31,6 +31,8 @@
     - import_tasks: fragments/jobs/weather.yml
       vars:
         period: 1800
+        config:
+          user_agent: "YOUR OWN"
     # - import_tasks: fragments/jobs/reboot.yml
 
     # - import_tasks: fragments/jobs/stow.yml

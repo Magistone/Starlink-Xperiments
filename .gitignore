@@ -27,6 +27,7 @@ dump.json
 #/collected_data/**/*.csv
 /analysis/*
 #!/analysis/*.py
+#!/analysis/*.sh
 
 # External dependencies
 /modules/grpc.py
